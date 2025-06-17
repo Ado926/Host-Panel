@@ -584,14 +584,14 @@
         authContainer.style.display = 'none';
         terminalContainer.style.display = 'block';
         userInfoElement.textContent = username;
-        terminalOutput.textContent = "♣ Conectando ♣";
+        terminalOutput.textContent = "♣ Conectando ♣\n";
         commandLoadingElement.style.display = 'none';
 
         // Eventos del socket
         socket.on("connect", () => {
           connectionStatus.className = "connection-status connected";
           connectionStatus.textContent = "Conectado";
-          terminalOutput.textContent += "♥ Host Conectado Exitosamente ♥";
+          terminalOutput.textContent += "♥ Host Conectado Exitosamente ♥\n";
         });
 
         socket.on("disconnect", () => {
@@ -746,7 +746,7 @@
             historyIndex = commandHistory.length;
 
             // Mostrar comando en terminal
-            terminalOutput.textContent += `SYAHost ~$ ${command}\n`;
+            terminalOutput.textContent += `MayHost ~$ ${command}\n`;
 
             // Enviar comando al servidor
             socket.emit('command', command);
