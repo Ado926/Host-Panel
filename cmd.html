@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SYA HOST Terminal 24/7</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+      color: #f5f5f5;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .terminal-container {
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(255, 80, 80, 0.25);
+      display: none;
+      border: 1px solid rgba(255, 100, 100, 0.3);
+    }
+
+    .auth-container {
+      background-color: #1a1a1a;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(255, 80, 80, 0.25);
+      border: 1px solid rgba(255, 100, 100, 0.3);
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .auth-header h2 {
+      color: #ffffff;
+      font-size: 24px;
+      margin-top: 10px;
+      background: linear-gradient(90deg, #FF8A00, #FF4D4D);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+    }
+    
+    .auth-header .subtext {
+      color: #cccccc;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .badge-24-7 {
+      background: linear-gradient(90deg, #FF8A00, #FF4D4D);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .auth-header img {
+      width: 140px;
+      margin-bottom: 15px;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      background-color: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #FF8A00;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255, 138, 0, 0.3);
+    }
+
+    .btn {
+      padding: 14px;
+      background: linear-gradient(90deg, #FF8A00, #FF4D4D);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: linear-gradient(90deg, #FF9F2F, #FF6B6B);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 80, 80, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #ccc;
+      border: 1px solid #444;
+      margin-top: 12px;
+    }
+
+    .btn-secondary:hover {
+      background-color: #2a2a2a;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .error-message {
+      color: #ff5f56;
+      font-size: 14px;
+      margin-top: 15px;
+      text-align: center;
+      display: none;
+      background-color: rgba(255, 95, 86, 0.1);
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    .terminal-header {
+      background: linear-gradient(90deg, #1a1a1a, #2a2a2a);
+      color: white;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+    }
+
+    .terminal-title {
+      font-weight: bold;
+      font-size: 16px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .terminal-title img {
+      height: 24px;
+      margin-right: 10px;
+    }
+
+    .user-info {
+      margin-left: 12px;
+      background-color: rgba(255, 77, 77, 0.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #FF8A00;
+      border: 1px solid rgba(255, 77, 77, 0.3);
+    }
+    
+    .badge-live {
+      display: flex;
+      align-items: center;
+      background-color: rgba(39, 201, 63, 0.2);
+      color: #27c93f;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      margin-left: 10px;
+      border: 1px solid rgba(39, 201, 63, 0.3);
+    }
+    
+    .badge-live::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: #27c93f;
+      border-radius: 50%;
+      margin-right: 4px;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .terminal-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .terminal-control {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-control.close {
+      background-color: #ff5f56;
+    }
+
+    .terminal-control.minimize {
+      background-color: #ffbd2e;
+    }
+
+    .terminal-control.expand {
+      background-color: #27c93f;
+    }
+
+    .terminal-actions {
+      display: flex;
+      align-items: center;
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: none;
+      color: #999;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .logout-btn:hover {
+      color: #fff;
+      background-color: rgba(255, 80, 80, 0.2);
+    }
+
+    .logout-icon {
+      width: 14px;
+      height: 14px;
+      margin-left: 5px;
+    }
+
+    .terminal-body {
+      background-color: #0d0d0d;
+      color: #f0f0f0;
+      height: 450px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #terminal-output {
+      flex-grow: 1;
+      padding: 12px 16px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 14px;
+      line-height: 1.5;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .terminal-input-container {
+      display: flex;
+      padding: 12px;
+      align-items: center;
+      background-color: #131313;
+      border-top: 1px solid #222;
+    }
+
+    .terminal-prompt {
+      color: #FF4D4D;
+      margin-right: 8px;
+      font-weight: bold;
+      flex-shrink: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    #terminal-input {
+      background-color: transparent;
+      border: none;
+      color: #f0f0f0;
+      flex-grow: 1;
+      font-size: 14px;
+      outline: none;
+      caret-color: #FF8A00;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    #terminal-input::placeholder {
+      color: #555;
+      opacity: 0.7;
+    }
+
+    .command-loading {
+        display: none;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 138, 0, 0.3);
+        border-top-color: #FF8A00;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-left: 8px;
+        flex-shrink: 0;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .connection-status {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .connection-status.connected {
+      background-color: rgba(39, 201, 63, 0.2);
+      color: #27c93f;
+      border: 1px solid rgba(39, 201, 63, 0.3);
+    }
+
+    .connection-status.disconnected {
+      background-color: rgba(255, 95, 86, 0.2);
+      color: #ff5f56;
+      border: 1px solid rgba(255, 95, 86, 0.3);
+    }
+
+    .connection-status::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .connection-status.connected::before {
+      background-color: #27c93f;
+      animation: pulse 1.5s infinite;
+    }
+
+    .connection-status.disconnected::before {
+      background-color: #ff5f56;
+    }
+    
+    .features {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .feature {
+      text-align: center;
+      color: #ccc;
+      font-size: 12px;
+      flex: 1;
+      padding: 10px;
+    }
+    
+    .feature i {
+      color: #FF8A00;
+      font-size: 18px;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #666;
+    }
+    
+    /* Animaciones */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .auth-container, .terminal-container {
+      animation: fadeIn 0.5s ease-out;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="auth-container" id="auth-container">
+      <div class="auth-header">
+        <img src="https://files.catbox.moe/qmk9cm.png" alt="SYA HOST Logo">
+        <h2>SYA HOST Terminal</h2>
+        <div class="badge-24-7">DISPONIBLE 24/7</div>
+        <p class="subtext">Soluciones de hosting profesionales y fáciles de usar</p>
+      </div>
+      
+      <div class="features">
+        <div class="feature">
+          <i class="fas fa-bolt"></i>
+          <span>Alta Velocidad</span>
+        </div>
+        <div class="feature">
+          <i class="fas fa-lock"></i>
+          <span>Seguro</span>
+        </div>
+        <div class="feature">
+          <i class="fas fa-headset"></i>
+          <span>Soporte 24/7</span>
+        </div>
+      </div>
+
+      <form class="auth-form" id="login-form">
+        <div class="form-group">
+          <label for="login-username">Nombre de usuario</label>
+          <input type="text" id="login-username" required placeholder="Ingresa tu usuario">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Contraseña</label>
+          <input type="password" id="login-password" required placeholder="Ingresa tu contraseña">
+        </div>
+        <button type="submit" class="btn">Iniciar sesión</button>
+        <button type="button" class="btn btn-secondary" id="show-register">Crear cuenta</button>
+        <div class="error-message" id="login-error"></div>
+      </form>
+
+      <form class="auth-form" id="register-form" style="display: none;">
+        <div class="form-group">
+          <label for="register-username">Nombre de usuario</label>
+          <input type="text" id="register-username" required placeholder="Elige un nombre de usuario">
+        </div>
+        <div class="form-group">
+          <label for="register-password">Contraseña</label>
+          <input type="password" id="register-password" required placeholder="Crea una contraseña segura">
+        </div>
+        <div class="form-group">
+          <label for="register-confirm">Confirmar contraseña</label>
+          <input type="password" id="register-confirm" required placeholder="Repite la contraseña">
+        </div>
+        <button type="submit" class="btn">Registrarse</button>
+        <button type="button" class="btn btn-secondary" id="show-login">Volver a iniciar sesión</button>
+        <div class="error-message" id="register-error"></div>
+      </form>
+    </div>
+
+    <div class="terminal-container" id="terminal-container">
+      <div class="terminal-header">
+        <div class="terminal-controls">
+          <div class="terminal-control close"></div>
+          <div class="terminal-control minimize"></div>
+          <div class="terminal-control expand"></div>
+        </div>
+        <div class="terminal-title">
+          <img src="https://files.catbox.moe/qmk9cm.png" alt="SYA HOST Logo">
+          SYA HOST
+          <span class="user-info" id="user-info">...</span>
+          <span class="badge-live">24/7</span>
+        </div>
+        <div class="terminal-actions">
+          <button class="logout-btn" id="logout-btn">
+            Cerrar sesión
+            <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="terminal-body">
+        <div id="terminal-output"></div>
+        <div class="terminal-input-container">
+          <span class="terminal-prompt">$</span>
+          <input
+            type="text"
+            id="terminal-input"
+            placeholder="Escribe un comando (ej: ls, pwd, help)..."
+            autocomplete="off"
+            autofocus
+          >
+           <div id="command-loading" class="command-loading"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="connection-status" class="connection-status disconnected">
+    Desconectado
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Elementos DOM
+      const authContainer = document.getElementById('auth-container');
+      const terminalContainer = document.getElementById('terminal-container');
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      const showRegisterBtn = document.getElementById('show-register');
+      const showLoginBtn = document.getElementById('show-login');
+      const loginError = document.getElementById('login-error');
+      const registerError = document.getElementById('register-error');
+      const userInfoElement = document.getElementById('user-info');
+      const logoutBtn = document.getElementById('logout-btn');
+      const terminalOutput = document.getElementById('terminal-output');
+      const terminalInput = document.getElementById('terminal-input');
+      const connectionStatus = document.getElementById('connection-status');
+      const commandLoadingElement = document.getElementById('command-loading');
+
+      // Variables del socket
+      let socket = null;
+      let commandHistory = [];
+      let historyIndex = -1;
+
+      // Comprobar si hay credenciales guardadas
+      const checkAuth = () => {
+        const authData = JSON.parse(localStorage.getItem('syaHostAuth') || '{}');
+        if (authData.token && authData.username) {
+          connectSocket(authData.token, authData.username);
+          return true;
+        }
+        return false;
+      };
+
+      // Conectar el socket
+      const connectSocket = (token, username) => {
+        // Desconectar socket existente si hay uno
+        if (socket) {
+          socket.disconnect();
+        }
+
+        // Crear nueva conexión con token de autenticación
+        socket = io("https://empty-shalne-soymaycol-bc16da7c.koyeb.app", {
+          auth: { token }
+        });
+
+        // Actualizar UI para mostrar terminal
+        authContainer.style.display = 'none';
+        terminalContainer.style.display = 'block';
+        userInfoElement.textContent = username;
+        terminalOutput.textContent = "⚡ Conectando a SYA HOST Terminal 24/7...\n";
+        commandLoadingElement.style.display = 'none';
+
+        // Eventos del socket
+        socket.on("connect", () => {
+          connectionStatus.className = "connection-status connected";
+          connectionStatus.textContent = "Conectado";
+          terminalOutput.textContent += "\n🚀 ¡Conexión establecida con SYA HOST!\n";
+          terminalOutput.textContent += "📌 Servicio 24/7 activo y listo para usar.\n";
+          terminalOutput.textContent += "💡 Escribe 'help' para ver la lista de comandos disponibles.\n\n";
+        });
+
+        socket.on("disconnect", () => {
+          connectionStatus.className = "connection-status disconnected";
+          connectionStatus.textContent = "Desconectado";
+          terminalOutput.textContent += "\n\n⚠️ [SYA HOST] Conexión perdida. Intentando reconectar...\n";
+          commandLoadingElement.style.display = 'none';
+        });
+
+        socket.on("connect_error", (err) => {
+          console.error("Error de conexión:", err.message);
+          terminalOutput.textContent += `\n\n❌ [SYA HOST] Error de conexión: ${err.message}\n`;
+          commandLoadingElement.style.display = 'none';
+
+          // Si hay error de autenticación, cerrar sesión
+          if (err.message === "Autenticación requerida" || err.message === "Token inválido") {
+            logout();
+          }
+        });
+
+        socket.on("output", (data) => {
+          terminalOutput.textContent += data;
+          terminalOutput.scrollTop = terminalOutput.scrollHeight;
+          commandLoadingElement.style.display = 'none';
+        });
+
+        socket.on("session", (data) => {
+          userInfoElement.textContent = `${data.username} (${data.sessionId})`;
+        });
+
+        // Enfocar el campo de entrada
+        setTimeout(() => {
+          terminalInput.focus();
+        }, 100);
+      };
+
+      // Función para cerrar sesión
+      const logout = () => {
+        if (socket) {
+          socket.disconnect();
+        }
+        localStorage.removeItem('syaHostAuth');
+        authContainer.style.display = 'block';
+        terminalContainer.style.display = 'none';
+        connectionStatus.className = "connection-status disconnected";
+        connectionStatus.textContent = "Desconectado";
+        loginForm.reset();
+        registerForm.reset();
+        commandLoadingElement.style.display = 'none';
+      };
+
+      // Manejo de formularios y botones
+      showRegisterBtn.addEventListener('click', () => {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        loginError.style.display = 'none';
+      });
+
+      showLoginBtn.addEventListener('click', () => {
+        registerForm.style.display = 'none';
+        loginForm.style.display = 'block';
+        registerError.style.display = 'none';
+      });
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+
+        try {
+          const response = await fetch('https://empty-shalne-soymaycol-bc16da7c.koyeb.app/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            loginError.textContent = data.error || 'Error al iniciar sesión';
+            loginError.style.display = 'block';
+            return;
+          }
+
+          // Guardar credenciales y conectar socket
+          localStorage.setItem('syaHostAuth', JSON.stringify({
+            username: data.username,
+            token: data.token
+          }));
+
+          connectSocket(data.token, data.username);
+
+        } catch (error) {
+          loginError.textContent = 'Error de conexión. Intente nuevamente.';
+          loginError.style.display = 'block';
+        }
+      });
+
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('register-username').value;
+        const password = document.getElementById('register-password').value;
+        const confirm = document.getElementById('register-confirm').value;
+
+        if (password !== confirm) {
+          registerError.textContent = 'Las contraseñas no coinciden';
+          registerError.style.display = 'block';
+          return;
+        }
+
+        try {
+          const response = await fetch('https://empty-shalne-soymaycol-bc16da7c.koyeb.app/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            registerError.textContent = data.error || 'Error al registrarse';
+            registerError.style.display = 'block';
+            return;
+          }
+
+          // Guardar credenciales y conectar socket
+          localStorage.setItem('syaHostAuth', JSON.stringify({
+            username: data.username,
+            token: data.token
+          }));
+
+          connectSocket(data.token, data.username);
+
+        } catch (error) {
+          registerError.textContent = 'Error de conexión. Intente nuevamente.';
+          registerError.style.display = 'block';
+        }
+      });
+
+      logoutBtn.addEventListener('click', logout);
+
+      // Manejo de comandos en el terminal
+      terminalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const command = terminalInput.value.trim();
+
+          // Only send command if input is not empty and socket is connected
+          if (command !== '' && socket && socket.connected) {
+            // Guardar comando en historial
+            commandHistory.push(command);
+            historyIndex = commandHistory.length;
+
+            // Mostrar comando en terminal
+            terminalOutput.textContent += `SYAHost ~$ ${command}\n`;
+
+            // Enviar comando al servidor
+            socket.emit('command', command);
+
+            // Show loading spinner
+            commandLoadingElement.style.display = 'inline-block';
+
+            // Limpiar input
+            terminalInput.value = '';
+          } else if (command !== '' && (!socket || !socket.connected)) {
+             terminalOutput.textContent += `$ ${command}\n`;
+             terminalOutput.textContent += "❌ [SYA HOST] Error: No conectado al servidor.\n";
+             terminalOutput.scrollTop = terminalOutput.scrollHeight;
+             terminalInput.value = '';
+          }
+
+          terminalOutput.scrollTop = terminalOutput.scrollHeight;
+          e.preventDefault();
+        }
+        // Navegación en historial
+        else if (e.key === 'ArrowUp') {
+          if (historyIndex > 0) {
+            historyIndex--;
+            terminalInput.value = commandHistory[historyIndex];
+            setTimeout(() => {
+              terminalInput.selectionStart = terminalInput.value.length;
+              terminalInput.selectionEnd = terminalInput.value.length;
+            }, 0);
+          } else if (historyIndex === 0) {
+             setTimeout(() => {
+                terminalInput.selectionStart = terminalInput.value.length;
+                terminalInput.selectionEnd = terminalInput.value.length;
+            }, 0);
+          }
+          e.preventDefault();
+        }
+        else if (e.key === 'ArrowDown') {
+          if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            terminalInput.value = commandHistory[historyIndex];
+          } else {
+            historyIndex = commandHistory.length;
+            terminalInput.value = '';
+          }
+           e.preventDefault();
+        }
+      });
+
+      // Enfocar input al hacer clic en terminal body
+      document.querySelector('.terminal-body').addEventListener('click', () => {
+        terminalInput.focus();
+      });
+
+      // Comandos personalizados
+      const handleCustomCommands = (command) => {
+        if (command === 'help') {
+          return `
+📋 Comandos disponibles:
+  - help        : Muestra esta ayuda
+  - clear       : Limpia la pantalla
+  - info        : Información sobre SYA HOST
+  - status      : Estado del servidor
+  - whoami      : Muestra tu usuario actual
+  - ls          : Lista archivos
+  - mkdir       : Crea un directorio
+  - cd          : Cambia de directorio
+  - touch       : Crea un archivo
+  - cat         : Muestra el contenido de un archivo
+  - rm          : Elimina un archivo
+  - 24/7        : Información sobre disponibilidad
+`;
+        } else if (command === 'clear') {
+          terminalOutput.textContent = '';
+          return '';
+        } else if (command === '24/7') {
+          return `
+✅ SYA HOST Terminal está disponible 24/7
+🔄 Servicios siempre activos con 99.9% de uptime
+🛡️ Monitoreo continuo de servidores
+🚀 Soporte técnico disponible en cualquier momento
+`;
+        }
+        return null;
+      };
+      
+      // Comprobar autenticación al cargar
+      if (!checkAuth()) {
+        authContainer.style.display = 'block';
+        terminalContainer.style.display = 'none';
+      }
+    });
+  </script>
+      <div id="root"></div>
+    <!-- This script injects a replit badge into the page, please feel free to remove this line -->
+    <script type="text/javascript" src="https://files.catbox.moe/mqzcek.js"></script>
+</body>
+</html>
