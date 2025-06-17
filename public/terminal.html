@@ -436,10 +436,9 @@
   <div class="container">
     <div class="auth-container" id="auth-container">
       <div class="auth-header">
-        <img src="https://files.catbox.moe/qmk9cm.png" alt="SYA HOST Logo">
-        <h2>SYA HOST Terminal</h2>
+        <h2>MayHost</h2>
         <div class="badge-24-7">DISPONIBLE 24/7</div>
-        <p class="subtext">Soluciones de hosting profesionales y fáciles de usar</p>
+        <p class="subtext">Hecho por SoyMaycol</p>
       </div>
       
       <div class="features">
@@ -498,8 +497,8 @@
           <div class="terminal-control expand"></div>
         </div>
         <div class="terminal-title">
-          <img src="https://files.catbox.moe/qmk9cm.png" alt="SYA HOST Logo">
-          SYA HOST
+          <img src="https://files.catbox.moe/zee841.png" alt="MayHost Logo">
+          MayHost
           <span class="user-info" id="user-info">...</span>
           <span class="badge-live">24/7</span>
         </div>
@@ -585,28 +584,27 @@
         authContainer.style.display = 'none';
         terminalContainer.style.display = 'block';
         userInfoElement.textContent = username;
-        terminalOutput.textContent = "⚡ Conectando a SYA HOST Terminal 24/7...\n";
+        terminalOutput.textContent = "♣ Conectando ♣";
         commandLoadingElement.style.display = 'none';
 
         // Eventos del socket
         socket.on("connect", () => {
           connectionStatus.className = "connection-status connected";
           connectionStatus.textContent = "Conectado";
-          terminalOutput.textContent += "\n🚀 ¡Conexión establecida con SYA HOST!\n";
-          terminalOutput.textContent += "📌 Servicio 24/7 activo y listo para usar.\n";
-          terminalOutput.textContent += "💡 Escribe 'help' para ver la lista de comandos disponibles.\n\n";
+          terminalOutput.textContent += "♥ Host Conectado Exitosamente ♥";
         });
 
         socket.on("disconnect", () => {
           connectionStatus.className = "connection-status disconnected";
           connectionStatus.textContent = "Desconectado";
-          terminalOutput.textContent += "\n\n⚠️ [SYA HOST] Conexión perdida. Intentando reconectar...\n";
+          terminalOutput.textContent += "¡Ups! Se ha perdido la Conexion\n";
+          terminalOutput.textContent += "Reconectando...";
           commandLoadingElement.style.display = 'none';
         });
 
         socket.on("connect_error", (err) => {
           console.error("Error de conexión:", err.message);
-          terminalOutput.textContent += `\n\n❌ [SYA HOST] Error de conexión: ${err.message}\n`;
+          terminalOutput.textContent += `\n\n¡Ups! Ha vido un error: ${err.message}`;
           commandLoadingElement.style.display = 'none';
 
           // Si hay error de autenticación, cerrar sesión
@@ -760,7 +758,7 @@
             terminalInput.value = '';
           } else if (command !== '' && (!socket || !socket.connected)) {
              terminalOutput.textContent += `$ ${command}\n`;
-             terminalOutput.textContent += "❌ [SYA HOST] Error: No conectado al servidor.\n";
+             terminalOutput.textContent += "¡Ups! No se ha podido conectar al servidor.";
              terminalOutput.scrollTop = terminalOutput.scrollHeight;
              terminalInput.value = '';
           }
@@ -804,32 +802,13 @@
 
       // Comandos personalizados
       const handleCustomCommands = (command) => {
-        if (command === 'help') {
-          return `
-📋 Comandos disponibles:
-  - help        : Muestra esta ayuda
-  - clear       : Limpia la pantalla
-  - info        : Información sobre SYA HOST
-  - status      : Estado del servidor
-  - whoami      : Muestra tu usuario actual
-  - ls          : Lista archivos
-  - mkdir       : Crea un directorio
-  - cd          : Cambia de directorio
-  - touch       : Crea un archivo
-  - cat         : Muestra el contenido de un archivo
-  - rm          : Elimina un archivo
-  - 24/7        : Información sobre disponibilidad
-`;
+        if (command === 'soporte') {
+          return `¡Hola! Soy Maycol, Contactame por el numero 51921826291 por Whatsapp!`;
         } else if (command === 'clear') {
           terminalOutput.textContent = '';
           return '';
         } else if (command === '24/7') {
-          return `
-✅ SYA HOST Terminal está disponible 24/7
-🔄 Servicios siempre activos con 99.9% de uptime
-🛡️ Monitoreo continuo de servidores
-🚀 Soporte técnico disponible en cualquier momento
-`;
+          return `Ese soy yo ♣`;
         }
         return null;
       };
