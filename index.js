@@ -327,6 +327,7 @@ function authenticateOwner(req, res, next) {
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 app.get("/terminal", (req, res) => res.sendFile(path.join(__dirname, "public", "terminal.html")));
 app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
+app.get("/archivos", (req, res) => res.sendFile(path.join(__dirname, "public", "file_manager.html")));
 
 // Autenticación de Socket.IO
 io.use((socket, next) => {
