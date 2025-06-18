@@ -128,7 +128,7 @@ app.get('/status', (req, res) => {
   const freeMem = os.freemem();
   const usedMem = totalMem - freeMem;
   const uptime = os.uptime();
-  const load = os.loadavg(); // [1 min, 5 min, 15 min]
+  const load = os.loadavg();
   const cpus = os.cpus();
 
   const estado = load[0] > cpus.length * 1.5 ? '⚠️ Alta carga' : '✅ Todo OK';
@@ -153,6 +153,9 @@ app.get('/status', (req, res) => {
       cargaPromedio: load.map(l => l.toFixed(2))
     }
   };
+
+  res.json(status);
+});
 
 // API de registro
 app.post("/api/register", (req, res) => {
