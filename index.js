@@ -42,7 +42,7 @@ if (!fs.existsSync(USERS_FILE)) {
     users: [{
       username: OWNER_USERNAME,
       email: OWNER_EMAIL,
-      password: hashPassword("admin123"), // Cambiar por contraseña segura
+      password: hashPassword("maycol123"),
       token: generateToken(),
       sessionId: `${OWNER_USERNAME}/shell`,
       role: "owner",
