@@ -201,7 +201,7 @@ app.post("/api/login", (req, res) => {
 });
 
 // APIs de administración
-app.post("/api/admin/users", authenticateAdmin, (req, res) => {
+app.get("/api/admin/users", authenticateAdmin, (req, res) => {
   const usersData = loadUsers();
   const users = usersData.users.map(user => ({
     username: user.username,
