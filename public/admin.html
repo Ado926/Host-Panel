@@ -475,6 +475,9 @@
                 <button class="tab active" onclick="showTab('users')">
                 <i class="fas fa-users"></i> Usuarios
                 </button>
+                <button class="tab status" onclick="showTab('status')">
+                <i class="fas fa-clock"></i> Usuarios
+                </button>
                 <button class="tab" onclick="location.href='/terminal'">
                 <i class="fas fa-terminal"></i> Terminal
                 </button>
@@ -503,6 +506,30 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Tab Status -->
+            <div id="status-tab" class="tab-content">
+  <div class="card">
+    <h3 class="card-title">
+      <i class="fas fa-clock"></i> Estado del Servidor
+      <button class="btn btn-primary btn-small" onclick="loadStatus()" style="margin-left: auto;">
+        <i class="fas fa-refresh"></i> Actualizar
+      </button>
+    </h3>
+
+    <div class="alert success" id="status-success"></div>
+    <div class="alert error" id="status-error"></div>
+
+    <div id="status-loading" class="hidden" style="text-align: center; padding: 2rem;">
+      <div class="loading"></div>
+      <p style="margin-top: 1rem;">Cargando estado del sistema...</p>
+    </div>
+
+    <div id="status-info" class="hidden">
+      <pre id="status-output" style="white-space: pre-wrap; font-family: monospace;"></pre>
+    </div>
+  </div>
+</div>
             
             <!-- Tab Terminal -->
             <div id="terminal-tab" class="tab-content">
@@ -585,6 +612,60 @@
             
             loadUsers();
         }
+        
+        function loadStatus() {
+  const successBox = document.getElementById("status-success");
+  const errorBox = document.getElementById("status-error");
+  const loadingBox = document.getElementById("status-loading");
+  const infoBox = document.getElementById("status-info");
+  const output = document.getElementById("status-output");
+
+  successBox.innerText = "";
+  errorBox.innerText = "";
+  infoBox.classList.add("hidden");
+  loadingBox.classList.remove("hidden");
+
+  fetch("/status")
+    .then((res) => {
+      if (!res.ok) throw new Error("Error al cargar el estado del servidor.");
+      return res.json();
+    })
+    .then((data) => {
+      const { sistema, memoria, cpu, sitiosHospedados } = data;
+
+      const text = `
+🖥️ Sistema:
+  - Plataforma: ${sistema.plataforma}
+  - Arquitectura: ${sistema.arquitectura}
+  - Uptime: ${sistema.uptime}
+  - Estado: ${sistema.estado}
+
+💾 Memoria RAM:
+  - Total: ${memoria.total}
+  - Usada: ${memoria.usada}
+  - Libre: ${memoria.libre}
+  - Uso: ${memoria.usoPorcentaje}
+
+🧠 CPU:
+  - Modelo: ${cpu.modelo}
+  - Núcleos: ${cpu.nucleos}
+  - Carga Promedio: ${cpu.cargaPromedio.join(', ')}
+
+🌐 Sitios hospedados: ${sitiosHospedados.length}
+      `.trim();
+
+      output.innerText = text;
+      infoBox.classList.remove("hidden");
+      successBox.innerText = "¡Estado actualizado correctamente! (⁠｡⁠•̀⁠ᴗ⁠-⁠)⁠✧";
+    })
+    .catch((err) => {
+      console.error(err);
+      errorBox.innerText = "Ocurrió un error al obtener el estado 😔";
+    })
+    .finally(() => {
+      loadingBox.classList.add("hidden");
+    });
+}
 
         function logout() {
             currentUser = null;
