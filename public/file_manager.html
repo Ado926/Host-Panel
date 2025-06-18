@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MayHost - Gestor de Archivos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #ff8a00;
+            --secondary-color: #e52e71;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: radial-gradient(circle, rgba(255, 138, 0, 0.1) 0%, rgba(229, 46, 113, 0.05) 30%, rgba(18, 18, 18, 1) 70%);
+        }
+
+        .login-box {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .login-logo {
+            width: 80px;
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .login-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 46, 113, 0.4);
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .main-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-logo {
+            width: 40px;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            color: var(--text-secondary);
+        }
+
+        .btn-logout {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #c82333;
+        }
+
+        .content {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--card-bg);
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-item {
+            padding: 0.8rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 138, 0, 0.1);
+        }
+
+        .sidebar-item.active {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .file-area {
+            flex: 1;
+            padding: 1rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toolbar {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--text-muted);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .breadcrumb {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            font-family: monospace;
+            color: var(--text-secondary);
+        }
+
+        .file-list {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .file-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .file-table th {
+            background: rgba(255, 138, 0, 0.1);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .file-table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .file-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .file-icon {
+            width: 20px;
+            margin-right: 0.5rem;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.3rem;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .editor-container {
+            height: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .editor {
+            width: 100%;
+            height: 100%;
+            background: var(--dark-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+        }
+
+        .status-bar {
+            background: var(--card-bg);
+            padding: 0.5rem 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <img src="https://files.catbox.moe/zee841.png" alt="MayHost Logo" class="login-logo">
+            <h2 class="login-title">Gestor de Archivos</h2>
+            <p class="login-subtitle">Accede a tu panel de gestión</p>
+            
+            <div id="loginError" class="error-message" style="display: none;"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" class="form-input" required>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="main-container" id="mainContainer">
+        <div class="header">
+            <div class="header-left">
+                <img src="https://files.catbox.moe/zee841.png" alt="MayHost Logo" class="header-logo">
+                <span class="header-title">Gestor de Archivos</span>
+            </div>
+            <div class="header-right">
+                <span class="user-info">Bienvenido, <span id="currentUser"></span></span>
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Navegación</div>
+                    <div class="sidebar-item active" data-action="files">
+                        <i class="fas fa-folder"></i> Archivos
+                    </div>
+                    <div class="sidebar-item" data-action="upload">
+                        <i class="fas fa-upload"></i> Subir Archivo
+                    </div>
+                    <div class="sidebar-item" data-action="new-folder">
+                        <i class="fas fa-plus"></i> Nueva Carpeta
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Herramientas</div>
+                    <div class="sidebar-item" data-action="permissions">
+                        <i class="fas fa-lock"></i> Permisos
+                    </div>
+                    <div class="sidebar-item" data-action="search">
+                        <i class="fas fa-search"></i> Buscar
+                    </div>
+                </div>
+            </div>
+
+            <div class="file-area">
+                <div class="toolbar">
+                    <button class="btn btn-primary" id="refreshBtn">
+                        <i class="fas fa-sync"></i> Actualizar
+                    </button>
+                    <button class="btn btn-success" id="newFileBtn">
+                        <i class="fas fa-file-plus"></i> Nuevo Archivo
+                    </button>
+                    <button class="btn btn-secondary" id="uploadBtn">
+                        <i class="fas fa-upload"></i> Subir
+                    </button>
+                    <button class="btn btn-danger" id="deleteBtn" disabled>
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+
+                <div class="breadcrumb" id="breadcrumb">
+                    / (Directorio raíz)
+                </div>
+
+                <div class="file-list">
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        Cargando archivos...
+                    </div>
+                    
+                    <table class="file-table" id="fileTable">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th>Nombre</th>
+                                <th>Tamaño</th>
+                                <th>Modificado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fileTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <span id="statusText">Listo</span>
+            <span id="fileCount">0 elementos</span>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="editorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="editorTitle">Editor de Archivos</h3>
+                <button class="close-btn" onclick="closeModal('editorModal')">&times;</button>
+            </div>
+            <div class="editor-container">
+                <textarea class="editor" id="fileEditor" placeholder="Contenido del archivo..."></textarea>
+            </div>
+            <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                <button class="btn btn-success" id="saveFileBtn">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('editorModal')">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentUser = null;
+        let token = null;
+        let currentPath = '';
+        let selectedFiles = new Set();
+
+        // Elementos DOM
+        const loginContainer = document.getElementById('loginContainer');
+        const mainContainer = document.getElementById('mainContainer');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+
+        // Login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentUser = data.username;
+                    token = data.token;
+                    
+                    // Mostrar aplicación principal
+                    loginContainer.style.display = 'none';
+                    mainContainer.style.display = 'block';
+                    document.getElementById('currentUser').textContent = currentUser;
+                    
+                    // Cargar archivos
+                    loadFiles();
+                } else {
+                    showError(data.error);
+                }
+            } catch (error) {
+                showError('Error de conexión');
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            currentUser = null;
+            token = null;
+            selectedFiles.clear();
+            loginContainer.style.display = 'flex';
+            mainContainer.style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        });
+
+        // Mostrar error
+        function showError(message) {
+            loginError.textContent = message;
+            loginError.style.display = 'block';
+            setTimeout(() => {
+                loginError.style.display = 'none';
+            }, 5000);
+        }
+
+        // Cargar archivos (simulado)
+        async function loadFiles(path = '') {
+            const loading = document.getElementById('loading');
+            const fileTableBody = document.getElementById('fileTableBody');
+            
+            loading.style.display = 'block';
+            fileTableBody.innerHTML = '';
+
+            // Simular carga de archivos
+            setTimeout(() => {
+                const files = [
+                    { name: '..', type: 'directory', size: '-', modified: '-' },
+                    { name: 'index.html', type: 'file', size: '2.4 KB', modified: '2024-06-17 10:30' },
+                    { name: 'style.css', type: 'file', size: '15.2 KB', modified: '2024-06-17 09:15' },
+                    { name: 'script.js', type: 'file', size: '8.7 KB', modified: '2024-06-17 11:45' },
+                    { name: 'images', type: 'directory', size: '-', modified: '2024-06-16 14:22' },
+                    { name: 'config.json', type: 'file', size: '1.1 KB', modified: '2024-06-15 16:30' }
+                ];
+
+                files.forEach(file => {
+                    const row = document.createElement('tr');
+                    const icon = file.type === 'directory' ? 'fa-folder' : 'fa-file';
+                    
+                    row.innerHTML = `
+                        <td><input type="checkbox" class="file-checkbox" data-file="${file.name}"></td>
+                        <td>
+                            <i class="fas ${icon} file-icon"></i>
+                            <span onclick="handleFileClick('${file.name}', '${file.type}')" style="cursor: pointer;">${file.name}</span>
+                        </td>
+                        <td>${file.size}</td>
+                        <td>${file.modified}</td>
+                        <td class="file-actions">
+                            <button class="action-btn" onclick="editFile('${file.name}')" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" onclick="downloadFile('${file.name}')" title="Descargar">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="action-btn" onclick="deleteFile('${file.name}')" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    fileTableBody.appendChild(row);
+                });
+
+                loading.style.display = 'none';
+                updateStatus();
+            }, 1000);
+        }
+
+        // Manejar click en archivo/carpeta
+        function handleFileClick(name, type) {
+            if (type === 'directory') {
+                if (name === '..') {
+                    // Navegar hacia atrás
+                    const pathParts = currentPath.split('/').filter(p => p);
+                    pathParts.pop();
+                    currentPath = pathParts.join('/');
+                } else {
+                    currentPath = currentPath ? `${currentPath}/${name}` : name;
+                }
+                updateBreadcrumb();
+                loadFiles(currentPath);
+            } else {
+                editFile(name);
+            }
+        }
+
+        // Actualizar breadcrumb
+        function updateBreadcrumb() {
+            const breadcrumb = document.getElementById('breadcrumb');
+            const path = currentPath || '/';
+            breadcrumb.textContent = `${path} (Directorio ${currentPath ? 'actual' : 'raíz'})`;
+        }
+
+        // Editar archivo
+        function editFile(filename) {
+            document.getElementById('editorTitle').textContent = `Editando: ${filename}`;
+            document.getElementById('fileEditor').value = `// Contenido de ${filename}\n// Este es un editor simulado\nconsole.log('Archivo: ${filename}');`;
+            document.getElementById('editorModal').style.display = 'flex';
+        }
+
+        // Cerrar modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Descargar archivo
+        function downloadFile(filename) {
+            alert(`Descargando: ${filename}`);
+        }
+
+        // Eliminar archivo
+        function deleteFile(filename) {
+            if (confirm(`¿Eliminar ${filename}?`)) {
+                alert(`Eliminado: ${filename}`);
+                loadFiles(currentPath);
+            }
+        }
+
+        // Actualizar estado
+        function updateStatus() {
+            const fileCount = document.querySelectorAll('.file-checkbox').length;
+            document.getElementById('fileCount').textContent = `${fileCount} elementos`;
+            document.getElementById('statusText').textContent = 'Listo';
+        }
+
+        // Event listeners adicionales
+        document.getElementById('refreshBtn').addEventListener('click', () => loadFiles(currentPath));
+        
+        document.getElementById('newFileBtn').addEventListener('click', () => {
+            const filename = prompt('Nombre del nuevo archivo:');
+            if (filename) {
+                editFile(filename);
+            }
+        });
+
+        document.getElementById('saveFileBtn').addEventListener('click', () => {
+            alert('Archivo guardado correctamente');
+            closeModal('editorModal');
+        });
+
+        // Selección múltiple
+        document.getElementById('selectAll').addEventListener('change', (e) => {
+            const checkboxes = document.querySelectorAll('.file-checkbox');
+            checkboxes.forEach(cb => cb.checked = e.target.checked);
+            updateSelection();
+        });
+
+        function updateSelection() {
+            const checked = document.querySelectorAll('.file-checkbox:checked').length;
+            document.getElementById('deleteBtn').disabled = checked === 0;
+        }
+
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                const action = item.dataset.action;
+                switch(action) {
+                    case 'files':
+                        loadFiles(currentPath);
+                        break;
+                    case 'upload':
+                        alert('Función de subida de archivos');
+                        break;
+                    case 'new-folder':
+                        const folderName = prompt('Nombre de la nueva carpeta:');
+                        if (folderName) {
+                            alert(`Carpeta "${folderName}" creada`);
+                            loadFiles(currentPath);
+                        }
+                        break;
+                    case 'permissions':
+                        alert('Panel de permisos');
+                        break;
+                    case 'search':
+                        const searchTerm = prompt('Buscar archivos:');
+                        if (searchTerm) {
+                            alert(`Buscando: ${searchTerm}`);
+                        }
+                        break;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
