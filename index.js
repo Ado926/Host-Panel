@@ -367,9 +367,9 @@ io.on("connection", (socket) => {
 --> GitHub: https://github.com/SoySapo6/
 --> Licence: MIT
 
-Usuario: ${user.username}
-Rol: ${user.role.toUpperCase()}
-Directorio de trabajo: ${sessionDir}
+
+
+
 `;
 
   if (user.role === "owner" || user.role === "admin") {
