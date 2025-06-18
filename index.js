@@ -5,6 +5,7 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const os = require('os');
 const cors = require("cors");
 
 const app = express();
@@ -120,6 +121,38 @@ function sanitizeCommand(command, userSessionDir) {
   
   return command;
 }
+
+//Estado del servido
+app.get('/status', (req, res) => {
+  const totalMem = os.totalmem();
+  const freeMem = os.freemem();
+  const usedMem = totalMem - freeMem;
+  const uptime = os.uptime();
+  const load = os.loadavg(); // [1 min, 5 min, 15 min]
+  const cpus = os.cpus();
+
+  const estado = load[0] > cpus.length * 1.5 ? '⚠️ Alta carga' : '✅ Todo OK';
+
+  const status = {
+    sistema: {
+      plataforma: os.platform(),
+      arquitectura: os.arch(),
+      uptime: `${Math.floor(uptime / 60)} minutos`,
+      estado
+    },
+    memoria: {
+      total: `${(totalMem / 1024 / 1024).toFixed(2)} MB`,
+      usada: `${(usedMem / 1024 / 1024).toFixed(2)} MB`,
+      libre: `${(freeMem / 1024 / 1024).toFixed(2)} MB`,
+      usoPorcentaje: `${((usedMem / totalMem) * 100).toFixed(2)}%`
+    },
+    cpu: {
+      nucleos: cpus.length,
+      modelo: cpus[0].model,
+      velocidadMHz: cpus[0].speed,
+      cargaPromedio: load.map(l => l.toFixed(2))
+    }
+  };
 
 // API de registro
 app.post("/api/register", (req, res) => {
