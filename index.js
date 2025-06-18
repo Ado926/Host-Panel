@@ -916,9 +916,9 @@ mayshell-system ps aux
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 404 Not Found 
-app.use((req, res) => {
+/*app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
-});
+});*/
 
 // Limpiar recursos al cerrar el servidor
 process.on('SIGINT', () => {
