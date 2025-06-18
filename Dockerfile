@@ -4,11 +4,11 @@ WORKDIR /app
 
 COPY package*.json ./
 
-# Instalar solo lo necesario y en una sola capa
-RUN apt update && apt upgrade && apt install -y curl \
-  && npm install --omit=dev \
-  && apt clean \
-  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y curl && \
+    npm install --omit=dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY . .
 
