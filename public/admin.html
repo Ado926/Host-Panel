@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MayShell Admin - Panel de Control</title>
+    <title>MayShell Admin - Panel de Administración</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -22,7 +22,7 @@
             --text-secondary: #cccccc;
             --text-muted: #888888;
             --success-color: #4caf50;
-            --danger-color: #f44336;
+            --error-color: #f44336;
             --warning-color: #ff9800;
         }
         
@@ -30,8 +30,16 @@
             background-color: var(--dark-bg);
             color: var(--text-color);
             min-height: 100vh;
+            overflow-x: hidden;
         }
-
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -39,80 +47,82 @@
             justify-content: center;
             background: radial-gradient(circle, rgba(255, 138, 0, 0.1) 0%, rgba(229, 46, 113, 0.05) 30%, rgba(18, 18, 18, 1) 70%);
         }
-
-        .admin-container {
-            display: none;
-            min-height: 100vh;
-        }
-
+        
         .login-card {
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 20px;
             padding: 3rem;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 138, 0, 0.2);
             width: 100%;
             max-width: 400px;
             text-align: center;
         }
-
-        .login-logo {
+        
+        .logo-container {
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
             width: 80px;
-            margin-bottom: 1.5rem;
+            height: 80px;
+            margin-bottom: 1rem;
             animation: float 3s ease-in-out infinite;
         }
-
+        
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
-
-        .login-title {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
         }
-
+        
         .login-subtitle {
             color: var(--text-secondary);
             margin-bottom: 2rem;
         }
-
+        
         .form-group {
             margin-bottom: 1.5rem;
             text-align: left;
         }
-
-        .form-label {
+        
+        .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             color: var(--text-secondary);
             font-weight: 500;
         }
-
-        .form-input {
+        
+        .form-group input {
             width: 100%;
             padding: 1rem;
             border: 2px solid rgba(255, 138, 0, 0.3);
-            border-radius: 8px;
+            border-radius: 10px;
             background: rgba(255, 255, 255, 0.05);
             color: var(--text-color);
             font-size: 1rem;
             transition: all 0.3s ease;
         }
-
-        .form-input:focus {
+        
+        .form-group input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 10px rgba(255, 138, 0, 0.3);
+            box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.1);
         }
-
+        
         .btn {
             padding: 1rem 2rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
@@ -122,695 +132,707 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            width: 100%;
         }
-
+        
         .btn-primary {
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: white;
-            width: 100%;
+            box-shadow: 0 4px 15px rgba(229, 46, 113, 0.4);
         }
-
+        
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(229, 46, 113, 0.4);
+            box-shadow: 0 7px 20px rgba(229, 46, 113, 0.6);
         }
-
+        
         .btn-secondary {
-            background: transparent;
+            background: var(--card-bg);
             color: var(--text-color);
             border: 2px solid var(--primary-color);
+            margin-top: 1rem;
         }
-
-        .btn-danger {
-            background: var(--danger-color);
-            color: white;
+        
+        .btn-secondary:hover {
+            background: rgba(255, 138, 0, 0.1);
         }
-
-        .btn-success {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--warning-color);
-            color: white;
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+        
+        .admin-panel {
             display: none;
+            padding: 2rem 0;
         }
-
-        .alert-success {
-            background: rgba(76, 175, 80, 0.2);
-            border: 1px solid var(--success-color);
-            color: var(--success-color);
-        }
-
-        .alert-danger {
-            background: rgba(244, 67, 54, 0.2);
-            border: 1px solid var(--danger-color);
-            color: var(--danger-color);
-        }
-
+        
         .header {
             background: var(--card-bg);
             padding: 1.5rem 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 138, 0, 0.2);
         }
-
+        
         .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
-
-        .header-logo {
+        
+        .welcome-info {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
-
-        .header-logo img {
-            width: 40px;
+        
+        .role-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
         }
-
-        .header-title {
-            font-size: 1.5rem;
+        
+        .role-owner {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+        }
+        
+        .role-admin {
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: white;
         }
-
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid rgba(255, 138, 0, 0.2);
+        }
+        
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 138, 0, 0.2);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .users-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .user-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 138, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .user-item:hover {
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+        
         .user-info {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
-
-        .user-role {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .role-owner {
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
             color: white;
         }
-
-        .role-admin {
+        
+        .user-details h4 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .user-details p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 8px;
+        }
+        
+        .btn-danger {
+            background: var(--error-color);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-warning {
             background: var(--warning-color);
             color: white;
         }
-
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .dashboard-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-icon {
-            font-size: 2rem;
-            color: var(--primary-color);
-        }
-
-        .card-title {
-            font-size: 1.3rem;
-            margin: 0;
-        }
-
-        .users-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-
-        .users-table th,
-        .users-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .users-table th {
-            background: rgba(255, 138, 0, 0.1);
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 500px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .terminal-output {
+        
+        .terminal-card {
             background: #000;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
+            border-radius: 10px;
             padding: 1rem;
-            border-radius: 8px;
-            height: 300px;
-            overflow-y: auto;
-            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
             font-size: 0.9rem;
-            margin-bottom: 1rem;
+            line-height: 1.4;
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--primary-color);
         }
-
+        
         .terminal-input {
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
+            margin-top: 1rem;
         }
-
+        
         .terminal-input input {
             flex: 1;
             background: #000;
-            color: #0f0;
-            border: 1px solid #333;
+            border: 1px solid var(--primary-color);
+            color: var(--text-color);
             padding: 0.5rem;
+            border-radius: 5px;
             font-family: 'Courier New', monospace;
         }
-
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .alert.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+        
+        .alert.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 138, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
         @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .login-card {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
             .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .user-item {
                 flex-direction: column;
                 gap: 1rem;
                 text-align: center;
             }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .users-table {
-                font-size: 0.9rem;
-            }
-
-            .actions {
-                flex-direction: column;
+            
+            .user-actions {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Login Container -->
-    <div class="login-container" id="loginContainer">
+    <!-- Pantalla de Login -->
+    <div id="login-screen" class="login-container">
         <div class="login-card">
-            <img src="https://files.catbox.moe/zee841.png" alt="MayShell Logo" class="login-logo">
-            <h1 class="login-title">MayShell Admin</h1>
-            <p class="login-subtitle">Panel de Control Administrativo</p>
+            <div class="logo-container">
+                <img src="https://files.catbox.moe/zee841.png" alt="MayShell Logo" class="logo">
+                <h1 class="logo-text">MayShell Admin</h1>
+                <p class="login-subtitle">Panel de Administración</p>
+            </div>
             
-            <div class="alert alert-danger" id="loginAlert"></div>
+            <div class="alert error" id="login-error"></div>
             
-            <form id="loginForm">
+            <form id="login-form">
                 <div class="form-group">
-                    <label class="form-label">Usuario</label>
-                    <input type="text" class="form-input" id="username" required>
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" required>
                 </div>
+                
                 <div class="form-group">
-                    <label class="form-label">Contraseña</label>
-                    <input type="password" class="form-input" id="password" required>
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" required>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Iniciar Sesión
+                
+                <button type="submit" class="btn btn-primary" id="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
                 </button>
             </form>
+            
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Volver al Inicio
+            </a>
         </div>
     </div>
-
-    <!-- Admin Container -->
-    <div class="admin-container" id="adminContainer">
-        <header class="header">
-            <div class="header-content">
-                <div class="header-logo">
-                    <img src="https://files.catbox.moe/zee841.png" alt="MayShell Logo">
-                    <h1 class="header-title">MayShell Admin</h1>
-                </div>
-                <div class="user-info">
-                    <span class="user-role" id="userRole">ADMIN</span>
-                    <span id="userName">Usuario</span>
-                    <button class="btn btn-secondary btn-sm" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Salir
+    
+    <!-- Panel de Administración -->
+    <div id="admin-panel" class="admin-panel">
+        <div class="container">
+            <div class="header">
+                <div class="header-content">
+                    <div class="welcome-info">
+                        <img src="https://files.catbox.moe/zee841.png" alt="Logo" style="width: 40px;">
+                        <div>
+                            <h2>Bienvenido, <span id="user-name">Admin</span></h2>
+                            <span id="user-role" class="role-badge">ADMIN</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                     </button>
                 </div>
             </div>
-        </header>
-
-        <main class="main-content">
-            <div class="alert alert-success" id="successAlert"></div>
-            <div class="alert alert-danger" id="errorAlert"></div>
-
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <i class="fas fa-users card-icon"></i>
-                        <h2 class="card-title">Gestión de Usuarios</h2>
-                    </div>
-                    <p>Administra usuarios del sistema</p>
-                    <button class="btn btn-primary" onclick="loadUsers()">
-                        <i class="fas fa-refresh"></i>
-                        Cargar Usuarios
-                    </button>
-                </div>
-
-                <div class="dashboard-card" id="ownerOnly" style="display: none;">
-                    <div class="card-header">
-                        <i class="fas fa-crown card-icon"></i>
-                        <h2 class="card-title">Funciones Owner</h2>
-                    </div>
-                    <p>Promocionar/degradar administradores</p>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <button class="btn btn-warning btn-sm" onclick="openPromoteModal()">
-                            <i class="fas fa-arrow-up"></i>
-                            Promover
+            
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('users')">
+                    <i class="fas fa-users"></i> Usuarios
+                </button>
+                <button class="tab" onclick="showTab('terminal')">
+                    <i class="fas fa-terminal"></i> Terminal
+                </button>
+            </div>
+            
+            <!-- Tab Usuarios -->
+            <div id="users-tab" class="tab-content active">
+                <div class="card">
+                    <h3 class="card-title">
+                        <i class="fas fa-users"></i> Gestión de Usuarios
+                        <button class="btn btn-primary btn-small" onclick="loadUsers()" style="margin-left: auto;">
+                            <i class="fas fa-refresh"></i> Actualizar
                         </button>
-                        <button class="btn btn-secondary btn-sm" onclick="openDemoteModal()">
-                            <i class="fas fa-arrow-down"></i>
-                            Degradar
+                    </h3>
+                    
+                    <div class="alert success" id="users-success"></div>
+                    <div class="alert error" id="users-error"></div>
+                    
+                    <div id="users-loading" class="hidden" style="text-align: center; padding: 2rem;">
+                        <div class="loading"></div>
+                        <p style="margin-top: 1rem;">Cargando usuarios...</p>
+                    </div>
+                    
+                    <div class="users-grid" id="users-list">
+                        <!-- Los usuarios se cargarán aquí -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Terminal -->
+            <div id="terminal-tab" class="tab-content">
+                <div class="card">
+                    <h3 class="card-title">
+                        <i class="fas fa-terminal"></i> Terminal de Sistema
+                    </h3>
+                    
+                    <div class="alert error" id="terminal-error"></div>
+                    
+                    <div class="terminal-card" id="terminal-output">
+                        <div style="color: var(--primary-color);">MayShell Admin Terminal v1.0</div>
+                        <div style="color: var(--text-secondary);">Escriba 'help' para ver comandos disponibles</div>
+                        <div>$&gt; </div>
+                    </div>
+                    
+                    <div class="terminal-input">
+                        <input type="text" id="terminal-input" placeholder="Escriba un comando..." onkeypress="handleTerminalInput(event)">
+                        <button class="btn btn-primary btn-small" onclick="executeCommand()">
+                            <i class="fas fa-play"></i> Ejecutar
                         </button>
                     </div>
                 </div>
-
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <i class="fas fa-terminal card-icon"></i>
-                        <h2 class="card-title">Terminal Sistema</h2>
-                    </div>
-                    <p>Ejecutar comandos del sistema</p>
-                    <button class="btn btn-danger" onclick="openTerminalModal()">
-                        <i class="fas fa-code"></i>
-                        Abrir Terminal
-                    </button>
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <i class="fas fa-list card-icon"></i>
-                    <h2 class="card-title">Lista de Usuarios</h2>
-                </div>
-                <div id="usersTableContainer">
-                    <p>Carga los usuarios para ver la lista</p>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Modals -->
-    <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Confirmar Eliminación</h3>
-                <button class="modal-close" onclick="closeModal('deleteModal')">&times;</button>
-            </div>
-            <p>¿Estás seguro de eliminar al usuario <strong id="deleteUsername"></strong>?</p>
-            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                <button class="btn btn-danger" onclick="confirmDelete()">Eliminar</button>
-                <button class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="promoteModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Promover Usuario</h3>
-                <button class="modal-close" onclick="closeModal('promoteModal')">&times;</button>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Usuario a promover</label>
-                <input type="text" class="form-input" id="promoteUsername" placeholder="Nombre de usuario">
-            </div>
-            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                <button class="btn btn-warning" onclick="promoteUser()">Promover</button>
-                <button class="btn btn-secondary" onclick="closeModal('promoteModal')">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="demoteModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Degradar Administrador</h3>
-                <button class="modal-close" onclick="closeModal('demoteModal')">&times;</button>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Administrador a degradar</label>
-                <input type="text" class="form-input" id="demoteUsername" placeholder="Nombre de usuario">
-            </div>
-            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                <button class="btn btn-secondary" onclick="demoteUser()">Degradar</button>
-                <button class="btn btn-secondary" onclick="closeModal('demoteModal')">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="terminalModal">
-        <div class="modal-content" style="max-width: 800px;">
-            <div class="modal-header">
-                <h3>Terminal del Sistema</h3>
-                <button class="modal-close" onclick="closeModal('terminalModal')">&times;</button>
-            </div>
-            <div class="terminal-output" id="terminalOutput">MayShell System Terminal v1.0
-Ejecute comandos con precaución...
-
-</div>
-            <div class="terminal-input">
-                <input type="text" id="terminalInput" placeholder="Ingrese comando..." style="flex: 1;">
-                <button class="btn btn-primary btn-sm" onclick="executeCommand()">Ejecutar</button>
             </div>
         </div>
     </div>
 
     <script>
-        let authToken = '';
-        let currentUser = {};
-        let deleteTarget = '';
+        let currentUser = null;
+        let authToken = null;
 
         // Login
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-
+            const loginBtn = document.getElementById('login-btn');
+            const loginError = document.getElementById('login-error');
+            
+            loginBtn.innerHTML = '<div class="loading"></div> Iniciando sesión...';
+            loginBtn.disabled = true;
+            loginError.style.display = 'none';
+            
             try {
                 const response = await fetch('/api/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({ username, password })
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (response.ok) {
-                    if (data.role === 'owner' || data.role === 'admin') {
-                        authToken = data.token;
+                    if (data.role === 'admin' || data.role === 'owner') {
                         currentUser = data;
-                        showAdmin();
+                        authToken = data.token;
+                        showAdminPanel();
                     } else {
-                        showAlert('loginAlert', 'Acceso denegado. Se requieren permisos de administrador.', 'danger');
+                        throw new Error('Acceso denegado. Se requieren permisos de administrador.');
                     }
                 } else {
-                    showAlert('loginAlert', data.error, 'danger');
+                    throw new Error(data.error || 'Error de autenticación');
                 }
             } catch (error) {
-                showAlert('loginAlert', 'Error de conexión', 'danger');
+                loginError.textContent = error.message;
+                loginError.style.display = 'block';
+            } finally {
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+                loginBtn.disabled = false;
             }
         });
 
-        function showAdmin() {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('adminContainer').style.display = 'block';
-            document.getElementById('userName').textContent = currentUser.username;
-            document.getElementById('userRole').textContent = currentUser.role.toUpperCase();
-            document.getElementById('userRole').className = `user-role role-${currentUser.role}`;
+        function showAdminPanel() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('user-name').textContent = currentUser.username;
+            document.getElementById('user-role').textContent = currentUser.role.toUpperCase();
+            document.getElementById('user-role').className = `role-badge role-${currentUser.role}`;
             
-            if (currentUser.role === 'owner') {
-                document.getElementById('ownerOnly').style.display = 'block';
-            }
+            loadUsers();
         }
 
         function logout() {
-            authToken = '';
-            currentUser = {};
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('adminContainer').style.display = 'none';
-            document.getElementById('loginForm').reset();
+            currentUser = null;
+            authToken = null;
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('login-form').reset();
+            document.getElementById('users-list').innerHTML = '';
+            document.getElementById('terminal-output').innerHTML = `
+                <div style="color: var(--primary-color);">MayShell Admin Terminal v1.0</div>
+                <div style="color: var(--text-secondary);">Escriba 'help' para ver comandos disponibles</div>
+                <div>$&gt; </div>
+            `;
+        }
+
+        function showTab(tabName) {
+            // Ocultar todas las tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar tab seleccionada
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
         }
 
         async function loadUsers() {
+            const usersLoading = document.getElementById('users-loading');
+            const usersList = document.getElementById('users-list');
+            const usersError = document.getElementById('users-error');
+            
+            usersLoading.classList.remove('hidden');
+            usersError.style.display = 'none';
+            usersList.innerHTML = '';
+            
             try {
                 const response = await fetch('/api/admin/users', {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (response.ok) {
                     displayUsers(data.users);
                 } else {
-                    showAlert('errorAlert', data.error, 'danger');
+                    throw new Error(data.error || 'Error al cargar usuarios');
                 }
             } catch (error) {
-                showAlert('errorAlert', 'Error al cargar usuarios', 'danger');
+                usersError.textContent = error.message;
+                usersError.style.display = 'block';
+            } finally {
+                usersLoading.classList.add('hidden');
             }
         }
 
         function displayUsers(users) {
-            const container = document.getElementById('usersTableContainer');
+            const usersList = document.getElementById('users-list');
             
             if (users.length === 0) {
-                container.innerHTML = '<p>No hay usuarios registrados</p>';
+                usersList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No hay usuarios registrados</p>';
                 return;
             }
-
-            let html = `
-                <table class="users-table">
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Email</th>
-                            <th>Rol</th>
-                            <th>Creado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            users.forEach(user => {
-                const canDelete = user.username !== 'SoyMaycol' && (user.role !== 'admin' || currentUser.role === 'owner');
-                html += `
-                    <tr>
-                        <td>${user.username}</td>
-                        <td>${user.email || 'N/A'}</td>
-                        <td><span class="user-role role-${user.role}">${user.role.toUpperCase()}</span></td>
-                        <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</td>
-                        <td class="actions">
-                            ${canDelete ? `<button class="btn btn-danger btn-sm" onclick="openDeleteModal('${user.username}')">
-                                <i class="fas fa-trash"></i>
-                            </button>` : ''}
-                        </td>
-                    </tr>
-                `;
-            });
-
-            html += '</tbody></table>';
-            container.innerHTML = html;
+            
+            usersList.innerHTML = users.map(user => `
+                <div class="user-item">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            ${user.username.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="user-details">
+                            <h4>${user.username}</h4>
+                            <p>${user.email || 'Sin email'} • ${user.role.toUpperCase()}</p>
+                            <p style="font-size: 0.8rem;">Creado: ${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        ${user.role !== 'owner' ? `
+                            <button class="btn btn-danger btn-small" onclick="deleteUser('${user.username}')">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        ` : ''}
+                        ${currentUser.role === 'owner' && user.role === 'user' ? `
+                            <button class="btn btn-success btn-small" onclick="promoteUser('${user.username}')">
+                                <i class="fas fa-arrow-up"></i> Promover
+                            </button>
+                        ` : ''}
+                        ${currentUser.role === 'owner' && user.role === 'admin' ? `
+                            <button class="btn btn-warning btn-small" onclick="demoteUser('${user.username}')">
+                                <i class="fas fa-arrow-down"></i> Degradar
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function openDeleteModal(username) {
-            deleteTarget = username;
-            document.getElementById('deleteUsername').textContent = username;
-            document.getElementById('deleteModal').style.display = 'block';
-        }
-
-        async function confirmDelete() {
+        async function deleteUser(username) {
+            if (!confirm(`¿Estás seguro de que quieres eliminar al usuario "${username}"?`)) {
+                return;
+            }
+            
             try {
-                const response = await fetch(`/api/admin/users/${deleteTarget}`, {
+                const response = await fetch(`/api/admin/users/${username}`, {
                     method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${authToken}` }
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (response.ok) {
-                    showAlert('successAlert', data.message, 'success');
-                    closeModal('deleteModal');
+                    showMessage('users-success', data.message);
                     loadUsers();
                 } else {
-                    showAlert('errorAlert', data.error, 'danger');
+                    throw new Error(data.error);
                 }
             } catch (error) {
-                showAlert('errorAlert', 'Error al eliminar usuario', 'danger');
+                showMessage('users-error', error.message);
             }
         }
 
-        function openPromoteModal() {
-            document.getElementById('promoteModal').style.display = 'block';
-        }
-
-        function openDemoteModal() {
-            document.getElementById('demoteModal').style.display = 'block';
-        }
-
-        async function promoteUser() {
-            const username = document.getElementById('promoteUsername').value;
-            if (!username) return;
-
+        async function promoteUser(username) {
             try {
                 const response = await fetch(`/api/admin/promote/${username}`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${authToken}` }
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (response.ok) {
-                    showAlert('successAlert', data.message, 'success');
-                    closeModal('promoteModal');
+                    showMessage('users-success', data.message);
                     loadUsers();
                 } else {
-                    showAlert('errorAlert', data.error, 'danger');
+                    throw new Error(data.error);
                 }
             } catch (error) {
-                showAlert('errorAlert', 'Error al promover usuario', 'danger');
+                showMessage('users-error', error.message);
             }
         }
 
-        async function demoteUser() {
-            const username = document.getElementById('demoteUsername').value;
-            if (!username) return;
-
+        async function demoteUser(username) {
             try {
                 const response = await fetch(`/api/admin/demote/${username}`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${authToken}` }
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (response.ok) {
-                    showAlert('successAlert', data.message, 'success');
-                    closeModal('demoteModal');
+                    showMessage('users-success', data.message);
                     loadUsers();
                 } else {
-                    showAlert('errorAlert', data.error, 'danger');
+                    throw new Error(data.error);
                 }
             } catch (error) {
-                showAlert('errorAlert', 'Error al degradar usuario', 'danger');
+                showMessage('users-error', error.message);
             }
         }
 
-        function openTerminalModal() {
-            document.getElementById('terminalModal').style.display = 'block';
-        }
-
-        function executeCommand() {
-            const input = document.getElementById('terminalInput');
-            const output = document.getElementById('terminalOutput');
-            const command = input.value.trim();
-            
-            if (!command) return;
-
-            output.textContent += `$ ${command}\n`;
-            
-            // Simular ejecución de comando
+        function showMessage(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
             setTimeout(() => {
-                output.textContent += `Comando ejecutado: ${command}\n[SIMULADO - Implementar conexión real al servidor]\n\n`;
-                output.scrollTop = output.scrollHeight;
-            }, 500);
-
-            input.value = '';
-        }
-
-        document.getElementById('terminalInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                executeCommand();
-            }
-        });
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            // Limpiar inputs
-            const inputs = document.querySelectorAll(`#${modalId} input`);
-            inputs.forEach(input => input.value = '');
-        }
-
-        function showAlert(alertId, message, type) {
-            const alert = document.getElementById(alertId);
-            alert.textContent = message;
-            alert.className = `alert alert-${type}`;
-            alert.style.display = 'block';
-            
-            setTimeout(() => {
-                alert.style.display = 'none';
+                element.style.display = 'none';
             }, 5000);
         }
 
-        // Cerrar modales al hacer clic fuera
-        window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                e.target.style.display = 'none';
+        // Terminal
+        function handleTerminalInput(event) {
+            if (event.key === 'Enter') {
+                executeCommand();
+            }
+        }
+
+        function executeCommand() {
+            const input = document.getElementById('terminal-input');
+            const output = document.getElementById('terminal-output');
+            const command = input.value.trim();
+            
+            if (!command) return;
+            
+            // Mostrar comando en terminal
+            output.innerHTML += `<div style="color: var(--primary-color);">$ ${command}</div>`;
+            
+            // Comandos locales
+            if (command === 'help') {
+                output.innerHTML += `
+                    <div style="color: var(--text-secondary); margin: 1rem 0;">
+                        Comandos disponibles:<br>
+                        • help - Mostrar esta ayuda<br>
+                        • clear - Limpiar terminal<br>
+                        • users - Listar usuarios<br>
+                        • system [comando] - Ejecutar comando del sistema<br>
+                    </div>
+                `;
+            } else if (command === 'clear') {
+                output.innerHTML = `
+                    <div style="color: var(--primary-color);">MayShell Admin Terminal v1.0</div>
+                    <div style="color: var(--text-secondary);">Escriba 'help' para ver comandos disponibles</div>
+                `;
+            } else if (command === 'users') {
+                output.innerHTML += `<div style="color: var(--text-secondary);">Use la pestaña "Usuarios" para gestionar usuarios</div>`;
+            } else if (command.startsWith('system ')) {
+                const systemCommand = command.substring(7);
+                output.innerHTML += `<div style="color: var(--warning-color);">Ejecutando: ${systemCommand}</div>`;
+                output.innerHTML += `<div style="color: var(--text-secondary);">Funcionalidad de terminal del sistema disponible próximamente...</div>`;
+            } else {
+                output.innerHTML += `<div style="color: var(--error-color);">Comando no reconocido: ${command}</div>`;
+                output.innerHTML += `<div style="color: var(--text-secondary);">Escriba 'help' para ver comandos disponibles</div>`;
+            }
+            
+            output.innerHTML += `<div>$&gt; </div>`;
+            input.value = '';
+            
+            // Scroll al final
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Manejo de tabs con teclas
+        document.addEventListener('keydown', (e) => {
+            if (e.altKey && e.key === '1') {
+                showTab('users');
+            } else if (e.altKey && e.key === '2') {
+                showTab('terminal');
             }
         });
     </script>
