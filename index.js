@@ -7,6 +7,7 @@ const path = require("path");
 const crypto = require("crypto");
 const os = require('os');
 const cors = require("cors");
+const chokidar = require("chokidar");
 
 const app = express();
 const server = http.createServer(app);
@@ -31,6 +32,9 @@ const SESSIONS_DIR = path.join(__dirname, "sessions");
 const USERS_FILE = path.join(__dirname, "users.json");
 const OWNER_EMAIL = "soymaycol.cn@gmail.com";
 const OWNER_USERNAME = "SoyMaycol";
+
+// Almacén de sitios hospedados
+let hostedSites = new Map(); // { siteName: { userDir, watcher, sockets } }
 
 // Crear directorio de sesiones si no existe
 if (!fs.existsSync(SESSIONS_DIR)) {
@@ -122,7 +126,38 @@ function sanitizeCommand(command, userSessionDir) {
   return command;
 }
 
-//Estado del servido
+// Función para limpiar nombre de sitio
+function sanitizeSiteName(name) {
+  return name.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase();
+}
+
+// Función para monitorear cambios en archivos
+function watchSiteFiles(siteName, userDir) {
+  const watcher = chokidar.watch(userDir, {
+    ignored: /node_modules/,
+    persistent: true,
+    ignoreInitial: true
+  });
+
+  watcher.on('change', (filePath) => {
+    const siteData = hostedSites.get(siteName);
+    if (siteData && siteData.sockets) {
+      // Notificar a todos los sockets conectados de este usuario sobre el cambio
+      siteData.sockets.forEach(socket => {
+        if (socket.connected) {
+          socket.emit('file-changed', {
+            siteName,
+            filePath: path.relative(userDir, filePath)
+          });
+        }
+      });
+    }
+  });
+
+  return watcher;
+}
+
+//Estado del servidor
 app.get('/status', (req, res) => {
   const totalMem = os.totalmem();
   const freeMem = os.freemem();
@@ -151,10 +186,58 @@ app.get('/status', (req, res) => {
       modelo: cpus[0].model,
       velocidadMHz: cpus[0].speed,
       cargaPromedio: load.map(l => l.toFixed(2))
-    }
+    },
+    sitiosHospedados: Array.from(hostedSites.keys())
   };
 
   res.json(status);
+});
+
+// Ruta para servir sitios hospedados
+app.get('/pages/:siteName/*?', (req, res) => {
+  const siteName = req.params.siteName;
+  const filePath = req.params[0] || 'index.html';
+  
+  const siteData = hostedSites.get(siteName);
+  if (!siteData) {
+    return res.status(404).send(`
+      <h1>Sitio no encontrado</h1>
+      <p>El sitio '${siteName}' no está siendo hospedado actualmente.</p>
+      <p>Sitios disponibles: ${Array.from(hostedSites.keys()).join(', ') || 'Ninguno'}</p>
+    `);
+  }
+
+  const fullPath = path.join(siteData.userDir, filePath);
+  
+  // Verificar que el archivo esté dentro del directorio del usuario
+  if (!fullPath.startsWith(siteData.userDir)) {
+    return res.status(403).send('Acceso denegado');
+  }
+
+  // Servir el archivo
+  res.sendFile(fullPath, (err) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        res.status(404).send(`
+          <h1>Archivo no encontrado</h1>
+          <p>El archivo '${filePath}' no existe en el sitio '${siteName}'.</p>
+          <a href="/pages/${siteName}">Volver al inicio</a>
+        `);
+      } else {
+        res.status(500).send('Error del servidor');
+      }
+    }
+  });
+});
+
+// API para listar sitios hospedados
+app.get('/api/hosted-sites', (req, res) => {
+  const sites = Array.from(hostedSites.entries()).map(([name, data]) => ({
+    name,
+    url: `/pages/${name}`,
+    directory: path.relative(SESSIONS_DIR, data.userDir)
+  }));
+  res.json({ sites });
 });
 
 // API de registro
@@ -271,8 +354,18 @@ app.delete("/api/admin/users/:username", authenticateAdmin, (req, res) => {
     return res.status(403).json({ error: "Solo el owner puede eliminar administradores" });
   }
   
-  // Eliminar directorio de sesión
+  // Eliminar sitios hospedados del usuario
   const sessionDir = path.join(SESSIONS_DIR, userToDelete.sessionId);
+  hostedSites.forEach((siteData, siteName) => {
+    if (siteData.userDir.startsWith(sessionDir)) {
+      if (siteData.watcher) {
+        siteData.watcher.close();
+      }
+      hostedSites.delete(siteName);
+    }
+  });
+  
+  // Eliminar directorio de sesión
   if (fs.existsSync(sessionDir)) {
     fs.rmSync(sessionDir, { recursive: true, force: true });
   }
@@ -391,6 +484,16 @@ io.on("connection", (socket) => {
   
   console.log(`Usuario conectado: ${user.username} (${user.role}) - ${user.sessionId}`);
 
+  // Agregar socket a los sitios hospedados del usuario
+  hostedSites.forEach((siteData, siteName) => {
+    if (siteData.userDir.startsWith(sessionDir)) {
+      if (!siteData.sockets) {
+        siteData.sockets = new Set();
+      }
+      siteData.sockets.add(socket);
+    }
+  });
+
   // Mensaje de bienvenida personalizado según el rol
   let welcomeMessage = `
 ╔════════════════╗
@@ -404,18 +507,24 @@ io.on("connection", (socket) => {
 --> Licence: MIT
 
 
-
-
 `;
 
   if (user.role === "owner" || user.role === "admin") {
     welcomeMessage += `
 PERMISOS DE ADMINISTRADOR ACTIVOS
 - Use 'mayshell-admin help' para comandos de administración
+- Use 'mayshell-system <comando>' para comandos del sistema
 `;
   }
 
-  welcomeMessage += "\n\n";
+  welcomeMessage += `
+¡Nuevos Comandos! ♥:
+- Use 'mayshell-host <nombre>' para hospedar un sitio web
+- Use 'mayshell-unhost <nombre>' para detener el hospedaje
+- Use 'mayshell-sites' para ver sitios hospedados
+
+> Hecho por SoyMaycol <3
+`;
   
   socket.emit("output", welcomeMessage);
 
@@ -437,6 +546,22 @@ PERMISOS DE ADMINISTRADOR ACTIVOS
   // Enviar comandos al terminal
   socket.on("command", (cmd) => {
     let processedCmd = cmd;
+
+    // Comandos especiales de hosting
+    if (cmd.startsWith("mayshell-host ")) {
+      handleHostCommand(cmd, socket, user, sessionDir);
+      return;
+    }
+
+    if (cmd.startsWith("mayshell-unhost ")) {
+      handleUnhostCommand(cmd, socket, user);
+      return;
+    }
+
+    if (cmd.trim() === "mayshell-sites") {
+      handleSitesCommand(socket, user, sessionDir);
+      return;
+    }
 
     // Comandos especiales de administración
     if (cmd.startsWith("mayshell-admin ") && (user.role === "owner" || user.role === "admin")) {
@@ -475,9 +600,135 @@ PERMISOS DE ADMINISTRADOR ACTIVOS
   // Manejar desconexión
   socket.on("disconnect", () => {
     console.log(`Usuario desconectado: ${user.username}`);
+    
+    // Remover socket de sitios hospedados
+    hostedSites.forEach((siteData) => {
+      if (siteData.sockets) {
+        siteData.sockets.delete(socket);
+      }
+    });
+    
     pty.kill();
   });
 });
+
+// Función para manejar comando mayshell-host
+function handleHostCommand(cmd, socket, user, sessionDir) {
+  const args = cmd.split(" ").slice(1);
+  if (args.length === 0) {
+    socket.emit("output", "\nUso: mayshell-host <nombre-del-sitio>\n");
+    return;
+  }
+
+  const siteName = sanitizeSiteName(args[0]);
+  if (!siteName) {
+    socket.emit("output", "\nError: Nombre de sitio inválido. Use solo letras, números, guiones y guiones bajos.\n");
+    return;
+  }
+
+  // Verificar si ya existe un sitio con ese nombre
+  if (hostedSites.has(siteName)) {
+    socket.emit("output", `\nError: Ya existe un sitio con el nombre '${siteName}'.\n`);
+    return;
+  }
+
+  // Verificar si existe index.html en el directorio actual
+  const indexPath = path.join(sessionDir, 'index.html');
+  if (!fs.existsSync(indexPath)) {
+    socket.emit("output", "\nError: No se encontró index.html en el directorio actual.\n");
+    socket.emit("output", "Cree un archivo index.html en este directorio antes de hospedar el sitio.\n");
+    return;
+  }
+
+  // Obtener el directorio de trabajo actual del usuario
+  const currentDir = process.cwd();
+  let userCurrentDir = sessionDir;
+
+  // Intentar obtener el directorio actual del PTY (esto es una aproximación)
+  try {
+    const ptyWorkingDir = sessionDir; // Por defecto, usar sessionDir
+    userCurrentDir = ptyWorkingDir;
+  } catch (err) {
+    // Usar sessionDir como fallback
+  }
+
+  // Crear el watcher para monitorear cambios
+  const watcher = watchSiteFiles(siteName, userCurrentDir);
+
+  // Registrar el sitio
+  hostedSites.set(siteName, {
+    userDir: userCurrentDir,
+    watcher: watcher,
+    sockets: new Set([socket])
+  });
+
+  const siteUrl = `/pages/${siteName}`;
+  socket.emit("output", `
+✅ Sitio '${siteName}' hospedado exitosamente!
+
+🌐 URL: http://localhost:${process.env.PORT || 3000}${siteUrl}
+📁 Directorio: ${path.relative(SESSIONS_DIR, userCurrentDir)}
+🔄 Monitoreo de cambios: ACTIVO
+
+Los cambios en los archivos se reflejarán automáticamente en el sitio web.
+
+`);
+}
+
+// Función para manejar comando mayshell-unhost
+function handleUnhostCommand(cmd, socket, user) {
+  const args = cmd.split(" ").slice(1);
+  if (args.length === 0) {
+    socket.emit("output", "\nUso: mayshell-unhost <nombre-del-sitio>\n");
+    return;
+  }
+
+  const siteName = sanitizeSiteName(args[0]);
+  const siteData = hostedSites.get(siteName);
+
+  if (!siteData) {
+    socket.emit("output", `\nError: No se encontró el sitio '${siteName}'.\n`);
+    return;
+  }
+
+  // Cerrar el watcher
+  if (siteData.watcher) {
+    siteData.watcher.close();
+  }
+
+  // Eliminar el sitio
+  hostedSites.delete(siteName);
+
+  socket.emit("output", `\n✅ Sitio '${siteName}' eliminado del hospedaje.\n`);
+}
+
+// Función para manejar comando mayshell-sites
+function handleSitesCommand(socket, user, sessionDir) {
+  const userSites = Array.from(hostedSites.entries())
+    .filter(([_, siteData]) => siteData.userDir.startsWith(sessionDir))
+    .map(([name, siteData]) => ({
+      name,
+      url: `/pages/${name}`,
+      directory: path.relative(sessionDir, siteData.userDir)
+    }));
+
+  if (userSites.length === 0) {
+    socket.emit("output", "\nNo tienes sitios hospedados actualmente.\n");
+    socket.emit("output", "Use 'mayshell-host <nombre>' para hospedar un sitio.\n");
+    return;
+  }
+
+  let output = "\n🌐 TUS SITIOS HOSPEDADOS:\n";
+  output += "================================\n";
+  
+  userSites.forEach(site => {
+    output += `📦 ${site.name}\n`;
+    output += `   🔗 http://localhost:${process.env.PORT || 3000}${site.url}\n`;
+    output += `   📁 ${site.directory || 'Directorio actual'}\n\n`;
+  });
+
+  socket.emit("output", output);
+}
 
 // Función para manejar comandos de administración
 function handleAdminCommand(cmd, socket, user) {
@@ -493,11 +744,13 @@ mayshell-admin users          - Listar todos los usuarios
 mayshell-admin delete <user>  - Eliminar usuario
 mayshell-admin promote <user> - Promover usuario a admin (solo owner)
 mayshell-admin demote <user>  - Degradar admin a usuario (solo owner)
+mayshell-admin sites          - Ver todos los sitios hospedados
 mayshell-system <comando>     - Ejecutar comando en el sistema
 
 Ejemplos:
 mayshell-admin users
 mayshell-admin delete usuario1
+mayshell-admin sites
 mayshell-system ls /root
 mayshell-system ps aux
 
@@ -513,6 +766,26 @@ mayshell-system ps aux
       });
       output += "\n";
       socket.emit("output", output);
+      break;
+
+    case "sites":
+      if (hostedSites.size === 0) {
+        socket.emit("output", "\nNo hay sitios hospedados actualmente.\n");
+        return;
+      }
+
+      let sitesOutput = "\n🌐 TODOS LOS SITIOS HOSPEDADOS:\n";
+      sitesOutput += "====================================\n";
+      
+      hostedSites.forEach((siteData, siteName) => {
+        const userDir = path.relative(SESSIONS_DIR, siteData.userDir);
+        sitesOutput += `📦 ${siteName}\n`;
+        sitesOutput += `   🔗 http://localhost:${process.env.PORT || 3000}/pages/${siteName}\n`;
+        sitesOutput += `   📁 ${userDir}\n`;
+        sitesOutput += `   👥 Conexiones activas: ${siteData.sockets ? siteData.sockets.size : 0}\n\n`;
+      });
+
+      socket.emit("output", sitesOutput);
       break;
 
     case "delete":
@@ -541,16 +814,35 @@ mayshell-system ps aux
         return;
       }
 
+      // Eliminar sitios hospedados del usuario
+      const targetSessionDir = path.join(SESSIONS_DIR, targetUser.sessionId);
+      const sitesToDelete = [];
+      hostedSites.forEach((siteData, siteName) => {
+        if (siteData.userDir.startsWith(targetSessionDir)) {
+          sitesToDelete.push(siteName);
+        }
+      });
+
+      sitesToDelete.forEach(siteName => {
+        const siteData = hostedSites.get(siteName);
+        if (siteData.watcher) {
+          siteData.watcher.close();
+        }
+        hostedSites.delete(siteName);
+      });
+
       // Eliminar directorio de sesión
-      const sessionDir = path.join(SESSIONS_DIR, targetUser.sessionId);
-      if (fs.existsSync(sessionDir)) {
-        fs.rmSync(sessionDir, { recursive: true, force: true });
+      if (fs.existsSync(targetSessionDir)) {
+        fs.rmSync(targetSessionDir, { recursive: true, force: true });
       }
 
       usersData2.users.splice(userIndex, 1);
       saveUsers(usersData2);
       
       socket.emit("output", `\nUsuario '${userToDelete}' eliminado correctamente\n`);
+      if (sitesToDelete.length > 0) {
+        socket.emit("output", `Sitios eliminados: ${sitesToDelete.join(', ')}\n`);
+      }
       break;
 
     case "promote":
@@ -628,6 +920,20 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
+// Limpiar recursos al cerrar el servidor
+process.on('SIGINT', () => {
+  console.log('\nCerrando servidor MayShell...');
+  
+  // Cerrar todos los watchers
+  hostedSites.forEach((siteData) => {
+    if (siteData.watcher) {
+      siteData.watcher.close();
+    }
+  });
+  
+  process.exit(0);
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Servidor MayShell en http://localhost:${PORT}`);
@@ -637,6 +943,12 @@ server.listen(PORT, () => {
   console.log("- GET  /           - Página principal");
   console.log("- GET  /terminal   - Terminal web");
   console.log("- GET  /admin      - Panel de administración");
+  console.log("- GET  /archivos   - Gestor de archivos");
+  console.log("- GET  /pages/:name - Sitios hospedados");
   console.log("- POST /api/login  - Iniciar sesión");
   console.log("- POST /api/register - Registrar usuario");
+  console.log("\nComandos de hosting:");
+  console.log("- mayshell-host <nombre>   - Hospedar sitio web");
+  console.log("- mayshell-unhost <nombre> - Detener hospedaje");
+  console.log("- mayshell-sites           - Ver sitios hospedados");
 });
