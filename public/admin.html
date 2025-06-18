@@ -464,9 +464,6 @@
             <div class="header">
                 <div class="header-content">
                     <div class="welcome-info">
-                        <div>
-                             <h2><span id="user-name">Admin</span></h2>
-                        </div>
                     </div>
                     
                     <button class="btn btn-secondary" onclick="logout()">
@@ -488,7 +485,7 @@
             <div id="users-tab" class="tab-content active">
                 <div class="card">
                     <h3 class="card-title">
-                        <i class="fas fa-users"></i> Gestión de Usuarios
+                        <i class="fas fa-users"></i> Usuarios
                         <button class="btn btn-primary btn-small" onclick="loadUsers()" style="margin-left: auto;">
                             <i class="fas fa-refresh"></i> Actualizar
                         </button>
@@ -512,21 +509,19 @@
             <div id="terminal-tab" class="tab-content">
                 <div class="card">
                     <h3 class="card-title">
-                        <i class="fas fa-terminal"></i> Terminal de Sistema
+                        <i class="fas fa-terminal"></i> MayHost
                     </h3>
                     
                     <div class="alert error" id="terminal-error"></div>
                     
                     <div class="terminal-card" id="terminal-output">
-                        <div style="color: var(--primary-color);">MayShell Admin Terminal v1.0</div>
-                        <div style="color: var(--text-secondary);">Escriba 'help' para ver comandos disponibles</div>
                         <div>$&gt; </div>
                     </div>
                     
                     <div class="terminal-input">
                         <input type="text" id="terminal-input" placeholder="Escriba un comando..." onkeypress="handleTerminalInput(event)">
                         <button class="btn btn-primary btn-small" onclick="executeCommand()">
-                            <i class="fas fa-play"></i> Ejecutar
+                            <i class="fas fa-play"></i>
                         </button>
                     </div>
                 </div>
@@ -789,7 +784,7 @@
             if (!command) return;
             
             // Mostrar comando en terminal
-            output.innerHTML += `<div style="color: var(--primary-color);">$ ${command}</div>`;
+            output.innerHTML += `<div style="color: var(--primary-color);"MayHost ~$ ${command}</div>`;
             
             // Comandos locales
             if (command === 'help') {
@@ -803,10 +798,7 @@
                     </div>
                 `;
             } else if (command === 'clear') {
-                output.innerHTML = `
-                    <div style="color: var(--primary-color);">MayShell Admin Terminal v1.0</div>
-                    <div style="color: var(--text-secondary);">Escriba 'help' para ver comandos disponibles</div>
-                `;
+                output.innerHTML = ``;
             } else if (command === 'users') {
                 output.innerHTML += `<div style="color: var(--text-secondary);">Use la pestaña "Usuarios" para gestionar usuarios</div>`;
             } else if (command.startsWith('system ')) {
