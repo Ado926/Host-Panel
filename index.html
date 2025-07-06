@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔥 TikiDL Pro ⭐</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    /* Variables CSS raíz para un tema consistente */
+    :root {
+      --primary: #00c6ad;
+      --secondary: #0077ff;
+      --bg: #f9fafb;
+      --text: #222;
+      --soft: #ffffff;
+      --error: #e74c3c;
+      --success: #27ae60;
+      --warning: #f39c12;
+    }
+
+    /* Restablecimiento de CSS y fuente universal */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Estilos del cuerpo para altura completa, centrado y relleno */
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      position: relative; /* Para el efecto de fondo */
+      overflow-x: hidden; /* Evita el desplazamiento horizontal */
+    }
+
+    /* Gradiente decorativo de fondo */
+    body::before {
+      content: "";
+      position: fixed;
+      top: -150px;
+      left: -150px;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at top left, rgba(0, 255, 255, 0.06), transparent 70%);
+      z-index: -1;
+    }
+
+    /* Estilo del título principal con gradiente y animación */
+    h1 {
+      font-size: clamp(2rem, 6vw, 2.8rem); /* Tamaño de fuente responsivo */
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 10px;
+      animation: shine 4s ease-in-out infinite;
+      user-select: none;
+    }
+
+    /* Animación de keyframes para el efecto de brillo en el título */
+    @keyframes shine {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Títulos de sección */
+    h2 {
+      margin-bottom: 15px;
+      font-weight: 700;
+      color: var(--secondary);
+      text-align: center;
+    }
+
+    /* Estilo del subtítulo */
+    p.subtitle {
+      color: #555;
+      margin-bottom: 30px;
+      font-size: clamp(0.9rem, 2.5vw, 1rem); /* Tamaño de fuente responsivo */
+      text-align: center;
+    }
+
+    /* Contenedor para secciones (login, registro, descargador, top) */
+    .container {
+      background: var(--soft);
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.07);
+      max-width: 480px;
+      width: 100%;
+      margin-bottom: 40px;
+      animation: fadeIn 0.5s ease-out; /* Animación de aparición para secciones */
+    }
+
+    /* Etiquetas para campos de formulario */
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+      user-select: none;
+    }
+
+    /* Estilo para campos de entrada de texto, contraseña y URL */
+    input[type="text"],
+    input[type="password"],
+    input[type="url"] {
+      padding: 12px 14px;
+      width: 100%;
+      font-size: 1rem;
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      background-color: #f7f9fb;
+      color: var(--text);
+      margin-bottom: 18px;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Estado de enfoque para campos de entrada */
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    input[type="url"]:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);
+    }
+
+    /* Estilo general de botón */
+    button {
+      padding: 14px 28px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 10px 0;
+      width: 100%;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+      box-shadow: 0 6px 16px rgba(0, 119, 255, 0.25);
+      user-select: none;
+    }
+
+    /* Efecto hover para botones */
+    button:hover:not(:disabled) {
+      transform: scale(1.02); /* Escala ligeramente menor para botones generales */
+      box-shadow: 0 8px 22px rgba(0, 119, 255, 0.35);
+    }
+
+    /* Estado deshabilitado para botones */
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Estilo del texto del cargador */
+    #loader {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #555;
+      animation: blink 1s infinite alternate;
+      user-select: none;
+      text-align: center;
+    }
+
+    /* Animación de keyframes para el efecto de parpadeo del cargador */
+    @keyframes blink {
+      from { opacity: 0.5; }
+      to { opacity: 1; }
+    }
+
+    /* Estilo del contenedor de video */
+    #videoContainer {
+      display: none; /* Oculto por defecto */
+      animation: fadeIn 1s ease-in-out; /* Animación de aparición */
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    /* Animación de keyframes para el efecto de aparición */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Estilo del elemento de video */
+    video {
+      width: 100%;
+      max-width: 400px; /* Limita el ancho máximo para pantallas grandes */
+      height: auto; /* Mantiene la relación de aspecto */
+      border-radius: 12px;
+      box-shadow: 0 0 16px rgba(0, 119, 255, 0.25);
+      margin-bottom: 15px;
+    }
+
+    /* Estilo del pie de página */
+    footer {
+      margin-top: auto; /* Empuja el pie de página hacia abajo */
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      padding-top: 20px; /* Añade espacio desde el contenido superior */
+    }
+
+    /* Estilo del botón de crédito (distinto de los botones principales) */
+    .credit-btn {
+      background: none;
+      border: 2px solid var(--secondary);
+      color: var(--secondary);
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin-top: 12px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      user-select: none;
+      width: auto; /* Anula el 100% de ancho para botones generales */
+      display: inline-block; /* Permite la alineación horizontal */
+      box-shadow: none; /* Elimina la sombra */
+    }
+
+    /* Efecto hover para el botón de crédito */
+    .credit-btn:hover {
+      background: var(--secondary);
+      color: white;
+      box-shadow: 0 0 12px rgba(0, 119, 255, 0.3);
+      transform: none; /* Evita la escala en hover */
+    }
+
+    /* Estilo de la barra de navegación */
+    nav {
+      margin-bottom: 30px;
+      display: flex;
+      flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas más pequeñas */
+      gap: 10px; /* Espacio más pequeño para móviles */
+      justify-content: center;
+      max-width: 100%; /* Asegura que la navegación no desborde */
+    }
+
+    /* Estilo de los botones de navegación */
+    nav button {
+      width: auto; /* Permite que los botones se ajusten al contenido */
+      padding: 10px 15px; /* Ajusta el relleno para los botones de navegación */
+      font-size: 0.95rem; /* Fuente ligeramente más pequeña para los botones de navegación */
+      background: var(--soft);
+      color: var(--secondary);
+      border: 2px solid var(--secondary);
+      box-shadow: none;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+      margin: 0; /* Elimina el margen predeterminado del botón */
+      border-radius: 10px; /* Radio de borde ligeramente menor */
+    }
+
+    /* Estados activo y hover para los botones de navegación */
+    nav button.active,
+    nav button:hover:not(:disabled) {
+      background: var(--secondary);
+      color: white;
+      box-shadow: 0 0 12px rgba(0, 119, 255, 0.3);
+      transform: translateY(-2px); /* Ligero efecto de elevación */
+    }
+
+    /* Estilo de los mensajes (error, éxito, advertencia) */
+    .message-box {
+      font-weight: 600;
+      margin-bottom: 15px;
+      user-select: none;
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .message-box.error {
+      color: var(--error);
+      background-color: rgba(231, 76, 60, 0.1);
+      border: 1px solid var(--error);
+    }
+
+    .message-box.success {
+      color: var(--success);
+      background-color: rgba(39, 174, 96, 0.1);
+      border: 1px solid var(--success);
+    }
+
+    .message-box.warning {
+      color: var(--warning);
+      background-color: rgba(243, 156, 18, 0.1);
+      border: 1px solid var(--warning);
+    }
+
+    /* Lista desplazable para Top Usuarios */
+    #topUsersList {
+      max-height: 250px;
+      overflow-y: auto;
+      text-align: left;
+      margin-top: 10px;
+      list-style: none; /* Elimina las viñetas de lista predeterminadas */
+      padding: 0; /* Elimina el relleno de lista predeterminado */
+    }
+
+    #topUsersList li {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee;
+      font-weight: 600;
+      color: var(--text);
+      display: flex; /* Usa flexbox para la alineación */
+      justify-content: space-between; /* Espacia el nombre y las descargas */
+      align-items: center;
+      background-color: #fcfcfc;
+      transition: background-color 0.2s ease;
+    }
+
+    #topUsersList li:last-child {
+      border-bottom: none; /* Sin borde para el último elemento */
+    }
+
+    #topUsersList li:hover {
+      background-color: #f0f0f0;
+    }
+
+    #topUsersList li span {
+      font-weight: 400;
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    /* Visualización del ID de usuario */
+    #userIdDisplay {
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 10px;
+      text-align: center;
+      word-break: break-all; /* Rompe IDs largos */
+      padding: 0 10px;
+    }
+
+    /* Estilo del Modal Personalizado */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: var(--soft);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .modal-overlay.visible .modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      color: var(--secondary);
+    }
+
+    .modal-content p {
+      margin-bottom: 25px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .modal-content button {
+      padding: 10px 25px;
+      font-size: 1rem;
+      width: auto;
+      margin: 0 5px;
+      border-radius: 8px;
+    }
+
+    .modal-content button.confirm {
+      background: var(--success);
+    }
+
+    .modal-content button.cancel {
+      background: var(--error);
+    }
+
+    /* Ajustes responsivos */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 10px;
+      }
+
+      .container {
+        padding: 20px 25px;
+      }
+
+      nav {
+        flex-direction: column; /* Apila los botones de navegación en pantallas muy pequeñas */
+        align-items: center;
+      }
+
+      nav button {
+        width: 90%; /* Hace que los botones de navegación sean más anchos en pantallas pequeñas */
+      }
+
+      button {
+        padding: 12px 20px;
+        font-size: 1rem;
+      }
+
+      input[type="text"],
+      input[type="password"],
+      input[type="url"] {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+      }
+
+      #topUsersList li {
+        flex-direction: column; /* Apila el nombre y las descargas */
+        align-items: flex-start;
+      }
+
+      #topUsersList li span {
+        margin-top: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📍 TikiDL Pro 📍</h1>
+  <p class="subtitle">Descarga videos sin marca de agua, totalmente gratis y con cuenta de usuario.</p>
+
+  <nav>
+    <button id="navLogin" class="active" onclick="App.showSection('login')">Iniciar Sesión</button>
+    <button id="navRegister" onclick="App.showSection('register')">Registrarse</button>
+    <button id="navDownloader" onclick="App.showSection('downloader')" disabled>Descargar Video</button>
+    <button id="navTop" onclick="App.showSection('top')" disabled>Top Usuarios</button>
+    <button id="navProfile" onclick="App.showSection('profile')" disabled>Mi Perfil</button>
+    <button id="navHistory" onclick="App.showSection('history')" disabled>Historial</button>
+    <button id="navLogout" onclick="App.handleLogout()" style="display:none; background:#e74c3c; border-color:#e74c3c;">Cerrar Sesión</button>
+  </nav>
+
+  <!-- Muestra el ID de usuario actual -->
+  <div id="userIdDisplay" style="display:none;"></div>
+
+  <!-- Sección de Inicio de Sesión -->
+  <section id="login" class="container">
+    <h2>Iniciar Sesión</h2>
+    <div id="loginMsg" class="message-box"></div>
+    <label for="loginUsername">Usuario</label>
+    <input type="text" id="loginUsername" placeholder="Tu usuario" autocomplete="username" />
+    <label for="loginPassword">Contraseña</label>
+    <input type="password" id="loginPassword" placeholder="Tu contraseña" autocomplete="current-password" />
+    <button id="loginBtn" onclick="App.handleLogin()">Entrar</button>
+  </section>
+
+  <!-- Sección de Registro -->
+  <section id="register" class="container" style="display:none;">
+    <h2>Registrarse</h2>
+    <div id="registerMsg" class="message-box"></div>
+    <label for="regName">Nombre Completo</label>
+    <input type="text" id="regName" placeholder="Tu nombre completo" autocomplete="name" />
+    <label for="regUsername">Usuario</label>
+    <input type="text" id="regUsername" placeholder="Elige un usuario" autocomplete="username" />
+    <label for="regPassword">Contraseña (mínimo 6 caracteres)</label>
+    <input type="password" id="regPassword" placeholder="Contraseña segura" autocomplete="new-password" />
+    <button id="registerBtn" onclick="App.handleRegister()">Crear Cuenta</button>
+  </section>
+
+  <!-- Sección de Descarga de Video -->
+  <section id="downloader" class="container" style="display:none;">
+    <h2>Descargar Video TikTok</h2>
+    <label for="url">Pega el enlace del video</label>
+    <input type="url" id="url" placeholder="https://www.tiktok.com/..." />
+    <button id="downloadBtn" onclick="App.descargar()">Obtener Video</button>
+    <div id="loader" style="display:none;">⏳ Cargando video... aguarda un toque alv XD</div>
+
+    <div id="videoContainer" style="display:none;">
+      <video id="video" controls></video>
+      <button id="descargarFileBtn" onclick="App.descargarVideoComoArchivo()">⚔️ Descargar Video</button>
+    </div>
+  </section>
+
+  <!-- Sección de Top Usuarios -->
+  <section id="top" class="container" style="display:none;">
+    <h2>Top Usuarios - Más Videos Descargados</h2>
+    <ol id="topUsersList"></ol>
+  </section>
+
+  <!-- Sección Mi Perfil (Conceptual) -->
+  <section id="profile" class="container" style="display:none;">
+    <h2>Mi Perfil</h2>
+    <p>Aquí podrás ver y editar la información de tu perfil.</p>
+    <p><strong>Nombre:</strong> <span id="profileName">Cargando...</span></p>
+    <p><strong>Usuario:</strong> <span id="profileUsername">Cargando...</span></p>
+    <p><strong>Descargas Totales:</strong> <span id="profileDownloads">Cargando...</span></p>
+    <p class="warning-msg">Esta sección está en desarrollo. ¡Pronto podrás editar tu perfil!</p>
+  </section>
+
+  <!-- Sección Historial de Descargas (Conceptual) -->
+  <section id="history" class="container" style="display:none;">
+    <h2>Historial de Descargas</h2>
+    <p>Aquí podrás ver un registro de todos los videos que has descargado.</p>
+    <ul id="downloadHistoryList">
+      <li>No hay historial de descargas aún.</li>
+    </ul>
+    <p class="warning-msg">Esta sección está en desarrollo. ¡Tu historial se guardará aquí!</p>
+  </section>
+
+  <footer>
+    ✿ Hecho por <strong>Ado</strong><br />
+    <button class="credit-btn" onclick="window.open('https://wa.me/+50493732693?text=Holass+vengo+de+tikidl,+q+tal+?:)', '_blank')">👤 Contactar Ado</button>
+  </footer>
+
+  <!-- Modal Personalizado para mensajes -->
+  <div id="customModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 id="modalTitle"></h3>
+      <p id="modalMessage"></p>
+      <button id="modalConfirmBtn" class="confirm" style="display:none;">OK</button>
+      <button id="modalCloseBtn" class="cancel">Cerrar</button>
+    </div>
+  </div>
+
+  <script type="module">
+    // Importaciones del SDK de Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, query, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    /**
+     * Objeto global App que encapsula toda la lógica de la aplicación.
+     * Esto ayuda a mantener el código organizado y evita colisiones de nombres.
+     */
+    const App = {
+      // Variables de Firebase
+      firebaseApp: null,
+      db: null,
+      auth: null,
+      currentFirebaseUser: null, // Objeto de usuario de Firebase
+      currentUserId: null,       // UID de Firebase
+      isAuthReady: false,        // Bandera para indicar si el estado de autenticación de Firebase está inicializado
+
+      // Variables de la aplicación
+      videoFinalUrl: '', // Almacena la URL del video obtenido
+
+      /**
+       * Inicializa Firebase y configura los oyentes de autenticación.
+       * Esta función se llama al cargar la ventana.
+       */
+      init: async function() {
+        try {
+          // Configuración de Firebase:
+          // Para Vercel (o cualquier entorno de producción):
+          // Deberías configurar tus variables de entorno en Vercel.
+          // Por ejemplo, en tu dashboard de Vercel, en "Settings" -> "Environment Variables",
+          // añadirías variables como:
+          // FIREBASE_API_KEY = "AIzaSy..."
+          // FIREBASE_AUTH_DOMAIN = "tu-proyecto.firebaseapp.com"
+          // FIREBASE_PROJECT_ID = "tu-proyecto-id"
+          // FIREBASE_STORAGE_BUCKET = "tu-proyecto.appspot.com"
+          // FIREBASE_MESSAGING_SENDER_ID = "..."
+          // FIREBASE_APP_ID = "1:..."
+          //
+          // Luego, en tu código, las accederías así:
+          // const firebaseConfig = {
+          //   apiKey: import.meta.env.VITE_FIREBASE_API_KEY, // Ejemplo con Vite
+          //   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+          //   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+          //   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+          //   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+          //   appId: import.meta.env.VITE_FIREBASE_APP_ID
+          // };
+
+          // Para el entorno de Canvas (como este):
+          // Las variables __app_id y __firebase_config son proporcionadas automáticamente.
+          const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+          const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+          this.firebaseApp = initializeApp(firebaseConfig);
+          this.db = getFirestore(this.firebaseApp);
+          this.auth = getAuth(this.firebaseApp);
+
+          // Escucha los cambios en el estado de autenticación
+          onAuthStateChanged(this.auth, async (user) => {
+            if (user) {
+              // Usuario ha iniciado sesión o es anónimo
+              this.currentFirebaseUser = user;
+              this.currentUserId = user.uid;
+              document.getElementById('userIdDisplay').textContent = `ID de Usuario: ${this.currentUserId}`;
+              document.getElementById('userIdDisplay').style.display = 'block';
+
+              await this.ensureUserProfile(user.uid); // Asegura que el perfil exista
+              this.afterLogin(); // Actualiza la UI para el estado de inicio de sesión
+              this.isAuthReady = true;
+              this.setupFirestoreListeners(); // Configura oyentes de datos
+            } else {
+              // Usuario ha cerrado sesión
+              this.currentFirebaseUser = null;
+              this.currentUserId = null;
+              document.getElementById('userIdDisplay').style.display = 'none';
+
+              // Si no hay token personalizado y no está autenticado, inicia sesión de forma anónima
+              // Esto asegura que siempre tengamos un UID para Firestore, incluso para usuarios no registrados.
+              if (!this.isAuthReady && !this.auth.currentUser) {
+                await signInAnonymously(this.auth).catch(e => console.error("Error al iniciar sesión de forma anónima:", e));
+              }
+              this.logout(); // Restablece la UI al estado de cierre de sesión
+              this.isAuthReady = true;
+              this.setupFirestoreListeners(); // Aún configura oyentes, pero los datos pueden ser limitados para anónimos.
+            }
+          });
+
+          // Intenta el inicio de sesión inicial usando un token personalizado si está disponible (para Canvas)
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(this.auth, __initial_auth_token);
+          } else {
+            // Si no hay token personalizado, y no hay usuario actual, intenta el inicio de sesión anónimo.
+            if (!this.auth.currentUser) {
+              await signInAnonymously(this.auth);
+            }
+          }
+        } catch (error) {
+          console.error("Error al inicializar Firebase:", error);
+          this.showMessage('error', 'Error al iniciar la aplicación. Por favor, intenta recargar la página.');
+        }
+      },
+
+      /**
+       * Asegura que un perfil de usuario exista en Firestore.
+       * Si no existe, crea un perfil básico para el usuario.
+       * @param {string} uid - El ID de usuario de Firebase.
+       */
+      ensureUserProfile: async function(uid) {
+        if (!this.db) {
+          console.error("Firestore no inicializado.");
+          return;
+        }
+        const userDocRef = doc(this.db, `artifacts/${AppId}/users/${uid}/userProfile/data`);
+        try {
+          const userDocSnap = await getDoc(userDocRef);
+          if (!userDocSnap.exists()) {
+            // Crea un nuevo perfil de usuario si no existe
+            await setDoc(userDocRef, {
+              name: "Usuario Anónimo", // Nombre por defecto para usuarios anónimos
+              username: `anon_${uid.substring(0, 8)}`, // Nombre de usuario por defecto
+              downloads: 0,
+              createdAt: new Date()
+            });
+            // También crea/actualiza la entrada en la tabla de clasificación pública
+            await this.updatePublicLeaderboard(uid, "Usuario Anónimo", `anon_${uid.substring(0, 8)}`, 0);
+            console.log("Nuevo perfil de usuario creado para:", uid);
+          }
+          // Actualiza la sección "Mi Perfil" con los datos actuales
+          const userData = userDocSnap.exists() ? userDocSnap.data() : { name: "N/A", username: "N/A", downloads: 0 };
+          document.getElementById('profileName').textContent = userData.name || 'N/A';
+          document.getElementById('profileUsername').textContent = userData.username || 'N/A';
+          document.getElementById('profileDownloads').textContent = userData.downloads || 0;
+        } catch (error) {
+          console.error("Error al asegurar el perfil de usuario:", error);
+          this.showMessage('error', 'Error al cargar tu perfil de usuario.');
+        }
+      },
+
+      /**
+       * Configura oyentes en tiempo real para los datos de Firestore.
+       * Esta función se llama una vez que el estado de autenticación de Firebase está listo.
+       */
+      setupFirestoreListeners: function() {
+        if (!this.db || !this.isAuthReady) {
+          console.warn("Firestore o Auth no están listos para los oyentes.");
+          return;
+        }
+
+        // Escucha los cambios en la tabla de clasificación pública
+        const leaderboardColRef = collection(this.db, `artifacts/${AppId}/public/leaderboard/users`);
+        onSnapshot(leaderboardColRef, (snapshot) => {
+          const usersArr = [];
+          snapshot.forEach(doc => {
+            usersArr.push(doc.data());
+          });
+          // Ordena localmente por descargas en orden descendente
+          usersArr.sort((a, b) => b.downloads - a.downloads);
+          this.updateTopUsersUI(usersArr); // Actualiza la interfaz de usuario con los datos ordenados
+        }, (error) => {
+          console.error("Error al escuchar la tabla de clasificación:", error);
+          this.showMessage('error', 'Error al cargar el top de usuarios.');
+        });
+
+        // Escucha los cambios en el perfil del usuario actual para actualizar la sección "Mi Perfil"
+        if (this.currentUserId) {
+          const userProfileDocRef = doc(this.db, `artifacts/${AppId}/users/${this.currentUserId}/userProfile/data`);
+          onSnapshot(userProfileDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+              const userData = docSnap.data();
+              document.getElementById('profileName').textContent = userData.name || 'N/A';
+              document.getElementById('profileUsername').textContent = userData.username || 'N/A';
+              document.getElementById('profileDownloads').textContent = userData.downloads || 0;
+            }
+          }, (error) => {
+            console.error("Error al escuchar el perfil del usuario:", error);
+          });
+        }
+      },
+
+      // --- Navegación de la UI y Gestión de Estados ---
+
+      /**
+       * Muestra la sección especificada y actualiza los botones de navegación.
+       * @param {string} section - El ID de la sección a mostrar ('login', 'register', 'downloader', 'top', 'profile', 'history').
+       */
+      showSection: function(section) {
+        const sections = ['login', 'register', 'downloader', 'top', 'profile', 'history'];
+        sections.forEach(sec => {
+          document.getElementById(sec).style.display = (sec === section) ? 'block' : 'none';
+        });
+
+        // Actualiza el estado activo para los botones de navegación
+        document.getElementById('navLogin').classList.toggle('active', section === 'login');
+        document.getElementById('navRegister').classList.toggle('active', section === 'register');
+        document.getElementById('navDownloader').classList.toggle('active', section === 'downloader');
+        document.getElementById('navTop').classList.toggle('active', section === 'top');
+        document.getElementById('navProfile').classList.toggle('active', section === 'profile');
+        document.getElementById('navHistory').classList.toggle('active', section === 'history');
+      },
+
+      /**
+       * Actualiza los elementos de la interfaz de usuario después de un inicio de sesión exitoso.
+       */
+      afterLogin: function() {
+        // Muestra la sección de descarga por defecto después del inicio de sesión
+        this.showSection('downloader');
+
+        // Habilita/deshabilita los botones de navegación según el estado de inicio de sesión
+        document.getElementById('navLogin').disabled = true;
+        document.getElementById('navRegister').disabled = true;
+        document.getElementById('navDownloader').disabled = false;
+        document.getElementById('navTop').disabled = false;
+        document.getElementById('navProfile').disabled = false; // Habilitar perfil
+        document.getElementById('navHistory').disabled = false; // Habilitar historial
+        document.getElementById('navLogout').style.display = 'inline-block';
+
+        // Limpia los campos de entrada de inicio de sesión y los mensajes
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('loginMsg').textContent = '';
+        document.getElementById('loginMsg').className = 'message-box';
+      },
+
+      /**
+       * Restablece los elementos de la interfaz de usuario después del cierre de sesión.
+       */
+      logout: function() {
+        // Restablece la interfaz de usuario al estado de inicio de sesión
+        this.showSection('login');
+        document.getElementById('navLogin').disabled = false;
+        document.getElementById('navRegister').disabled = false;
+        document.getElementById('navDownloader').disabled = true;
+        document.getElementById('navTop').disabled = true;
+        document.getElementById('navProfile').disabled = true; // Deshabilita perfil
+        document.getElementById('navHistory').disabled = true; // Deshabilita historial
+        document.getElementById('navLogout').style.display = 'none';
+
+        // Limpia la sección de descarga
+        document.getElementById('url').value = '';
+        document.getElementById('videoContainer').style.display = 'none';
+        document.getElementById('loader').style.display = 'none';
+        this.videoFinalUrl = '';
+      },
+
+      // --- Funciones de Autenticación de Usuario (Firebase Auth) ---
+
+      /**
+       * Maneja el registro de usuarios con Autenticación de Correo/Contraseña de Firebase.
+       */
+      handleRegister: async function() {
+        const name = document.getElementById('regName').value.trim();
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value;
+
+        const msg = document.getElementById('registerMsg');
+        msg.textContent = '';
+        msg.className = 'message-box';
+
+        // Validación básica de entrada
+        if (name.length < 3) {
+          msg.textContent = '❌ El nombre debe tener al menos 3 caracteres.';
+          msg.className = 'message-box error';
+          return;
+        }
+        if (username.length < 3) {
+          msg.textContent = '❌ El usuario debe tener al menos 3 caracteres.';
+          msg.className = 'message-box error';
+          return;
+        }
+        if (password.length < 6) { // Firebase requiere un mínimo de 6 caracteres para la contraseña
+          msg.textContent = '❌ La contraseña debe tener al menos 6 caracteres.';
+          msg.className = 'message-box error';
+          return;
+        }
+
+        // Deshabilita el botón durante el registro
+        const registerBtn = document.getElementById('registerBtn');
+        registerBtn.disabled = true;
+        registerBtn.textContent = 'Registrando...';
+
+        try {
+          // Firebase Auth usa correo electrónico, así que adjunta un dominio ficticio al nombre de usuario
+          const email = `${username}@tikidl.com`;
+          const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
+          const uid = userCredential.user.uid;
+
+          // Almacena los detalles del usuario en Firestore (perfil privado)
+          const userDocRef = doc(this.db, `artifacts/${AppId}/users/${uid}/userProfile/data`);
+          await setDoc(userDocRef, {
+            name: name,
+            username: username,
+            downloads: 0,
+            createdAt: new Date()
+          });
+
+          // Almacena los detalles del usuario en la colección de la tabla de clasificación pública
+          await this.updatePublicLeaderboard(uid, name, username, 0);
+
+          msg.textContent = '✅ Cuenta creada con éxito. Ahora puedes iniciar sesión.';
+          msg.className = 'message-box success';
+
+          // Limpia los campos de entrada
+          document.getElementById('regName').value = '';
+          document.getElementById('regUsername').value = '';
+          document.getElementById('regPassword').value = '';
+
+          // Cambia a la sección de inicio de sesión después de un registro exitoso
+          this.showSection('login');
+        } catch (error) {
+          console.error("Error durante el registro:", error);
+          let errorMessage = '❌ Error al crear la cuenta.';
+          if (error.code === 'auth/email-already-in-use') {
+            errorMessage = '❌ El usuario ya existe. Por favor, elige otro.';
+          } else if (error.code === 'auth/invalid-email') {
+            errorMessage = '❌ Formato de usuario inválido.'; // No debería ocurrir con el dominio ficticio
+          } else if (error.code === 'auth/weak-password') {
+            errorMessage = '❌ Contraseña demasiado débil.';
+          }
+          msg.textContent = errorMessage;
+          msg.className = 'message-box error';
+        } finally {
+          registerBtn.disabled = false;
+          registerBtn.textContent = 'Crear Cuenta';
+        }
+      },
+
+      /**
+       * Maneja el inicio de sesión de usuarios con Autenticación de Correo/Contraseña de Firebase.
+       */
+      handleLogin: async function() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        const msg = document.getElementById('loginMsg');
+        msg.textContent = '';
+        msg.className = 'message-box';
+
+        // Validación básica de entrada
+        if (username.length < 3 || password.length < 6) {
+          msg.textContent = '❌ Usuario y contraseña deben tener al menos 3 y 6 caracteres respectivamente.';
+          msg.className = 'message-box error';
+          return;
+        }
+
+        // Deshabilita el botón durante el inicio de sesión
+        const loginBtn = document.getElementById('loginBtn');
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Entrando...';
+
+        try {
+          const email = `${username}@tikidl.com`;
+          await signInWithEmailAndPassword(this.auth, email, password);
+          // El oyente onAuthStateChanged manejará afterLogin() y showMessage
+        } catch (error) {
+          console.error("Error durante el inicio de sesión:", error);
+          let errorMessage = '❌ Error al iniciar sesión.';
+          if (error.code === 'auth/invalid-credential') {
+            errorMessage = '❌ Usuario o contraseña incorrectos.';
+          } else if (error.code === 'auth/user-not-found') {
+            errorMessage = '❌ Usuario no encontrado.';
+          }
+          msg.textContent = errorMessage;
+          msg.className = 'message-box error';
+        } finally {
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Entrar';
+        }
+      },
+
+      /**
+       * Maneja el cierre de sesión del usuario.
+       */
+      handleLogout: async function() {
+        try {
+          await signOut(this.auth);
+          // El oyente onAuthStateChanged manejará logout() y showMessage
+        } catch (error) {
+          console.error("Error durante el cierre de sesión:", error);
+          this.showMessage('error', 'Error al cerrar sesión.');
+        }
+      },
+
+      // --- Funciones de Descarga de Video de TikTok ---
+
+      /**
+       * Obtiene la información del video de la API de TikTok.
+       *
+       * NOTA IMPORTANTE PARA UNA WEB PROFESIONAL:
+       * La API 'https://www.tikwm.com/api/' es una API pública y puede tener limitaciones de tasa,
+       * ser inestable o dejar de funcionar en cualquier momento. Para una aplicación profesional
+       * y escalable, se recomienda encarecidamente implementar un backend propio que se encargue
+       * de la lógica de descarga de videos. Esto te permitiría:
+       * 1. Controlar las solicitudes y evitar límites de tasa.
+       * 2. Añadir capas de seguridad y validación.
+       * 3. Ofrecer más formatos o calidades de video.
+       * 4. Mantener la estabilidad de tu servicio independientemente de APIs de terceros.
+       * Este frontend solo interactuaría con tu propio backend.
+       */
+      descargar: async function() {
+        if (!this.currentUserId) {
+          this.showMessage('warning', 'Debes iniciar sesión para descargar videos.');
+          return;
+        }
+
+        const urlInput = document.getElementById("url");
+        const url = urlInput.value.trim();
+        if (!url) {
+          this.showMessage('warning', "Por favor, ingresa un enlace válido de TikTok.");
+          return;
+        }
+
+        const loader = document.getElementById("loader");
+        const videoContainer = document.getElementById("videoContainer");
+        const downloadBtn = document.getElementById("downloadBtn");
+
+        loader.style.display = "block";
+        videoContainer.style.display = "none";
+        downloadBtn.disabled = true;
+        downloadBtn.textContent = 'Obteniendo...';
+        this.videoFinalUrl = ''; // Reinicia la URL del video anterior
+
+        try {
+          const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`);
+          const data = await res.json();
+
+          if (!data || !data.data || !data.data.play) {
+            throw new Error("No se pudo obtener el video. Verifica el enlace o intenta con otro.");
+          }
+
+          this.videoFinalUrl = data.data.play;
+          const videoElement = document.getElementById("video");
+          videoElement.src = this.videoFinalUrl;
+          videoContainer.style.display = "block";
+
+          // Incrementa el contador de descargas para el usuario actual en Firestore
+          await this.incrementUserDownloads(this.currentUserId);
+          this.showMessage('success', '¡Video listo para descargar!');
+        } catch (e) {
+          console.error("Error al obtener el video:", e);
+          this.showMessage('error', `🚫 Error: ${e.message || 'No se pudo procesar el enlace. Asegúrate de que sea un enlace válido de TikTok.'}`);
+        } finally {
+          loader.style.display = "none";
+          downloadBtn.disabled = false;
+          downloadBtn.textContent = 'Obtener Video';
+        }
+      },
+
+      /**
+       * Descarga el video obtenido como un archivo.
+       */
+      descargarVideoComoArchivo: async function() {
+        try {
+          if (!this.videoFinalUrl) {
+            this.showMessage('warning', "⚠️ No hay video para descargar. Primero obtén el video.");
+            return;
+          }
+
+          const response = await fetch(this.videoFinalUrl);
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "tiktok_video.mp4"; // Nombre de archivo por defecto
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url); // Libera la URL del objeto
+
+          this.showMessage('success', '¡Descarga iniciada! Revisa tus descargas.');
+        } catch (e) {
+          console.error("Error al descargar el archivo de video:", e);
+          this.showMessage('error', "⚠️ No se pudo descargar el video como archivo. Intenta de nuevo.");
+        }
+      },
+
+      // --- Funciones de Manipulación de Datos de Firestore ---
+
+      /**
+       * Incrementa el contador de descargas para un usuario específico en Firestore.
+       * Actualiza tanto el perfil de usuario privado como la tabla de clasificación pública.
+       * @param {string} uid - El ID de usuario de Firebase.
+       */
+      incrementUserDownloads: async function(uid) {
+        if (!this.db || !uid) {
+          console.error("Firestore o UID no disponibles para incrementar descargas.");
+          return;
+        }
+
+        const userDocRef = doc(this.db, `artifacts/${AppId}/users/${uid}/userProfile/data`);
+        const leaderboardDocRef = doc(this.db, `artifacts/${AppId}/public/leaderboard/users`, uid); // Usa UID como ID de documento para la tabla de clasificación pública
+
+        try {
+          // Incrementa atómicamente las descargas en el perfil privado
+          await updateDoc(userDocRef, {
+            downloads: increment(1)
+          });
+
+          // También actualiza la entrada de la tabla de clasificación pública
+          const userProfileSnap = await getDoc(userDocRef);
+          if (userProfileSnap.exists()) {
+            const userData = userProfileSnap.data();
+            await this.updatePublicLeaderboard(uid, userData.name, userData.username, userData.downloads);
+          } else {
+            console.warn("Perfil de usuario no encontrado para el incremento, no se puede actualizar completamente la tabla de clasificación pública.");
+          }
+        } catch (error) {
+          console.error("Error al incrementar las descargas del usuario:", error);
+          this.showMessage('error', 'Error al actualizar el contador de descargas.');
+        }
+      },
+
+      /**
+       * Actualiza o crea una entrada en la colección de la tabla de clasificación pública.
+       *
+       * NOTA IMPORTANTE SOBRE REGLAS DE SEGURIDAD DE FIRESTORE:
+       * Para una aplicación profesional, es CRÍTICO que configures las reglas de seguridad de Firestore
+       * para proteger tus datos. Por ejemplo:
+       *
+       * rules_version = '2';
+       * service cloud.firestore {
+       * match /databases/{database}/documents {
+       * // Reglas para datos privados del usuario (solo el usuario puede leer/escribir su propio perfil)
+       * match /artifacts/{appId}/users/{userId}/userProfile/data {
+       * allow read, write: if request.auth != null && request.auth.uid == userId;
+       * }
+       *
+       * // Reglas para la tabla de clasificación pública (cualquiera autenticado puede leer,
+       * // pero solo el usuario puede escribir su propia entrada)
+       * match /artifacts/{appId}/public/leaderboard/users/{userId} {
+       * allow read: if request.auth != null;
+       * allow write: if request.auth != null && request.auth.uid == userId;
+       * }
+       * }
+       * }
+       *
+       * Asegúrate de adaptar estas reglas a tus necesidades específicas.
+       *
+       * @param {string} uid - El ID de usuario de Firebase.
+       * @param {string} name - El nombre de visualización del usuario.
+       * @param {string} username - El nombre de usuario elegido por el usuario.
+       * @param {number} downloads - El total actual de descargas para el usuario.
+       */
+      updatePublicLeaderboard: async function(uid, name, username, downloads) {
+        if (!this.db || !uid) {
+          console.error("Firestore o UID no disponibles para la actualización de la tabla de clasificación pública.");
+          return;
+        }
+        const leaderboardDocRef = doc(this.db, `artifacts/${AppId}/public/leaderboard/users`, uid);
+        try {
+          await setDoc(leaderboardDocRef, {
+            uid: uid,
+            name: name,
+            username: username,
+            downloads: downloads
+          }, { merge: true }); // Usa merge para actualizar los campos existentes o crear si no existe
+        } catch (error) {
+          console.error("Error al actualizar la tabla de clasificación pública:", error);
+        }
+      },
+
+      /**
+       * Actualiza la interfaz de usuario de la lista de Top Usuarios basándose en los datos proporcionados.
+       * Esta función es llamada por el oyente onSnapshot de Firestore.
+       * @param {Array<Object>} usersArr - Un array de objetos de usuario ordenados por descargas.
+       */
+      updateTopUsersUI: function(usersArr) {
+        const list = document.getElementById('topUsersList');
+        list.innerHTML = ''; // Limpia la lista existente
+
+        if (usersArr.length === 0) {
+          list.innerHTML = '<li>No hay usuarios registrados o descargas aún. ¡Sé el primero!</li>';
+          return;
+        }
+
+        usersArr.forEach(user => {
+          const li = document.createElement('li');
+          li.textContent = user.name + ' (' + user.username + ')';
+          const span = document.createElement('span');
+          span.textContent = user.downloads + ' descargas';
+          li.appendChild(span);
+          list.appendChild(li);
+        });
+      },
+
+      // --- Funciones de Modal Personalizado (reemplaza alert/confirm) ---
+
+      /**
+       * Muestra el modal personalizado con un mensaje y tipo dados.
+       * @param {string} type - 'success', 'error' o 'warning'.
+       * @param {string} message - El mensaje a mostrar.
+       * @param {boolean} showConfirm - Si se debe mostrar un botón de confirmación (por defecto falso).
+       * @returns {Promise<boolean>} - Resuelve true si se confirma, false si se cancela/cierra.
+       */
+      showMessage: function(type, message, showConfirm = false) {
+        const customModal = document.getElementById('customModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+        return new Promise((resolve) => {
+          modalTitle.textContent = type === 'success' ? '¡Éxito!' : (type === 'error' ? '¡Error!' : '¡Atención!');
+          modalMessage.textContent = message;
+
+          // Restablece los estilos de los botones
+          modalConfirmBtn.style.display = showConfirm ? 'inline-block' : 'none';
+          modalCloseBtn.textContent = showConfirm ? 'Cancelar' : 'Cerrar';
+
+          // Limpia los oyentes de eventos anteriores
+          modalConfirmBtn.onclick = null;
+          modalCloseBtn.onclick = null;
+
+          // Establece nuevos oyentes de eventos
+          modalConfirmBtn.onclick = () => {
+            customModal.classList.remove('visible');
+            resolve(true);
+          };
+          modalCloseBtn.onclick = () => {
+            customModal.classList.remove('visible');
+            resolve(false);
+          };
+
+          customModal.classList.add('visible');
+        });
+      }
+    };
+
+    // Inicializa la aplicación cuando la ventana se haya cargado completamente
+    window.onload = () => App.init();
+
+    // Variable global para el ID de la aplicación, utilizada en rutas de Firestore
+    const AppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+  </script>
+
+</body>
+</html>
+
