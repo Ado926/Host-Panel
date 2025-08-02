@@ -15,8 +15,11 @@ const server = http.createServer(app);
 // Configuración inicial
 const SESSIONS_DIR = path.join(__dirname, "sessions");
 const USERS_FILE = path.join(__dirname, "users.json");
-const OWNER_USERNAME = "SoyMaycol";
 const OWNER_EMAIL = "soymaycol.cn@gmail.com";
+const OWNER_USERNAME = "SoyMaycol";
+
+// Almacén de sitios hospedados
+let hostedSites = new Map(); // { siteName: { userDir, watcher, sockets } }
 
 // Crear directorio de sesiones si no existe
 if (!fs.existsSync(SESSIONS_DIR)) {
@@ -38,26 +41,6 @@ if (!fs.existsSync(USERS_FILE)) {
   };
   fs.writeFileSync(USERS_FILE, JSON.stringify(initialData, null, 2), 'utf8');
 }
-
-// Middleware para servir archivos estáticos desde la carpeta 'public'
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-app.use(express.json());
-
-const io = socketIO(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
-});
-
-// Almacén de sitios hospedados
-let hostedSites = new Map(); // { siteName: { userDir, watcher, sockets } }
 
 // Funciones utilitarias
 function loadUsers() {
@@ -86,11 +69,17 @@ function generateToken() {
   return crypto.randomBytes(32).toString('hex');
 }
 
+function isValidPath(userSessionDir, targetPath) {
+  const resolvedPath = path.resolve(userSessionDir, targetPath);
+  return resolvedPath.startsWith(userSessionDir);
+}
+
 function sanitizeCommand(command, userSessionDir) {
   const dangerousCommands = [
     'rm -rf /', 'mkfs', 'dd if=', 'chmod 777 /',
     'chown root', 'sudo su', 'su root'
   ];
+
   for (const dangerous of dangerousCommands) {
     if (command.includes(dangerous)) {
       return null;
@@ -98,13 +87,16 @@ function sanitizeCommand(command, userSessionDir) {
   }
 
   if (command.trim().startsWith('cd ')) {
-    const targetDir = command.trim().substring(3).trim();
+    const targetDir = command.trim().substring(3).trim() || userSessionDir;
+
     if (targetDir === '~' || targetDir === '' || targetDir === './') {
       return `cd "${userSessionDir}"`;
     }
+
     if (path.isAbsolute(targetDir)) {
       return `cd "${userSessionDir}"`;
     }
+
     const resolvedPath = path.resolve(userSessionDir, targetDir);
     if (!resolvedPath.startsWith(userSessionDir)) {
       return `cd "${userSessionDir}"`;
@@ -123,6 +115,7 @@ function watchSiteFiles(siteName, userDir) {
     persistent: true,
     ignoreInitial: true
   });
+
   watcher.on('change', (filePath) => {
     const siteData = hostedSites.get(siteName);
     if (siteData && siteData.sockets) {
@@ -139,8 +132,24 @@ function watchSiteFiles(siteName, userDir) {
   return watcher;
 }
 
+// Middleware
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(express.json());
+
+// Servir archivos estáticos desde la carpeta 'public'
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rutas estáticas específicas
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+app.get("/terminal", (req, res) => res.sendFile(path.join(__dirname, "public", "terminal.html")));
+app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
+app.get("/archivos", (req, res) => res.sendFile(path.join(__dirname, "public", "file_manager.html")));
+
 // APIs y Rutas
-// Estado del servidor
 app.get('/status', (req, res) => {
   const totalMem = os.totalmem();
   const freeMem = os.freemem();
@@ -174,7 +183,6 @@ app.get('/status', (req, res) => {
   res.json(status);
 });
 
-// Ruta para servir sitios hospedados
 app.get('/pages/:siteName/*?', (req, res) => {
   const siteName = req.params.siteName;
   const filePath = req.params[0] || 'index.html';
@@ -200,7 +208,6 @@ app.get('/pages/:siteName/*?', (req, res) => {
   });
 });
 
-// APIs para listar sitios hospedados
 app.get('/api/hosted-sites', (req, res) => {
   const sites = Array.from(hostedSites.entries()).map(([name, data]) => ({
     name,
@@ -210,9 +217,8 @@ app.get('/api/hosted-sites', (req, res) => {
   res.json({ sites });
 });
 
-// APIs de autenticación y registro
 app.post("/api/register", (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
   if (!username || !password) {
     return res.status(400).json({ error: "Nombre de usuario y contraseña son requeridos" });
   }
@@ -229,6 +235,7 @@ app.post("/api/register", (req, res) => {
   }
   usersData.users.push({
     username,
+    email: email || null,
     password: hashedPassword,
     token,
     sessionId,
@@ -260,7 +267,7 @@ app.post("/api/login", (req, res) => {
   res.json({ username: user.username, token, sessionId: user.sessionId, role: user.role || "user" });
 });
 
-// APIs de administración (Se mantienen igual)
+// Middleware de autenticación
 function authenticateAdmin(req, res, next) {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: "Token requerido" });
@@ -285,11 +292,13 @@ function authenticateOwner(req, res, next) {
   next();
 }
 
+// APIs de administración
 app.post("/api/admin/users", authenticateAdmin, (req, res) => {
   const usersData = loadUsers();
   const users = usersData.users.map(user => ({ username: user.username, email: user.email, role: user.role, createdAt: user.createdAt, lastLogin: user.lastLogin }));
   res.json({ users });
 });
+
 app.delete("/api/admin/users/:username", authenticateAdmin, (req, res) => {
   const { username } = req.params;
   const currentUser = req.user;
@@ -315,6 +324,7 @@ app.delete("/api/admin/users/:username", authenticateAdmin, (req, res) => {
   saveUsers(usersData);
   res.json({ message: `Usuario ${username} eliminado correctamente` });
 });
+
 app.post("/api/admin/promote/:username", authenticateOwner, (req, res) => {
   const { username } = req.params;
   const usersData = loadUsers();
@@ -325,11 +335,12 @@ app.post("/api/admin/promote/:username", authenticateOwner, (req, res) => {
   saveUsers(usersData);
   res.json({ message: `Usuario ${username} promovido a administrador` });
 });
+
 app.post("/api/admin/demote/:username", authenticateOwner, (req, res) => {
   const { username } = req.params;
   if (username === OWNER_USERNAME) return res.status(403).json({ error: "No se puede degradar al owner" });
   const usersData = loadUsers();
-  const user = usersData.users.find(u => u.username === userToDemote);
+  const user = usersData.users.find(u => u.username === username);
   if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
   user.role = "user";
   saveUsers(usersData);
@@ -362,13 +373,27 @@ io.on("connection", (socket) => {
     }
   });
 
-  let welcomeMessage = `\nBienvenido a TermiHost, ${user.username}\n`;
+  let welcomeMessage = `
+╔════════════════╗
+║ TermiHost
+╚════════════════
+
+`;
   if (user.role === "owner" || user.role === "admin") {
-    welcomeMessage += `\n[ADMIN] Permisos de administrador activos.\n`;
+    welcomeMessage += `
+PERMISOS DE ADMINISTRADOR ACTIVOS
+- Use 'mayshell-admin help' para comandos de administración
+- Use 'mayshell-system <comando>' para comandos del sistema
+`;
   }
-  welcomeMessage += `\nEscribe 'help' para ver los comandos disponibles.`;
-  welcomeMessage += `\nUsa 'termihost-host <nombre>' para hospedar un sitio web`;
-  welcomeMessage += `\nUsa 'termihost-sites' para ver tus sitios hospedados\n`;
+  welcomeMessage += `
+¡Nuevos Comandos! ♥:
+- Use 'mayshell-host <nombre>' para hospedar un sitio web
+- Use 'mayshell-unhost <nombre>' para detener el hospedaje
+- Use 'mayshell-sites' para ver sitios hospedados
+
+> Hecho por SoyMaycol <3
+`;
   socket.emit("output", welcomeMessage);
 
   const pty = spawn("bash", [], {
@@ -377,24 +402,24 @@ io.on("connection", (socket) => {
   });
 
   socket.on("command", (cmd) => {
-    if (cmd.startsWith("termihost-host ")) {
+    let processedCmd = cmd;
+    if (cmd.startsWith("mayshell-host ")) {
       handleHostCommand(cmd, socket, user, sessionDir);
       return;
     }
-    if (cmd.startsWith("termihost-unhost ")) {
+    if (cmd.startsWith("mayshell-unhost ")) {
       handleUnhostCommand(cmd, socket, user);
       return;
     }
-    if (cmd.trim() === "termihost-sites") {
+    if (cmd.trim() === "mayshell-sites") {
       handleSitesCommand(socket, user, sessionDir);
       return;
     }
-    if (cmd.startsWith("termihost-admin ") && (user.role === "owner" || user.role === "admin")) {
+    if (cmd.startsWith("mayshell-admin ") && (user.role === "owner" || user.role === "admin")) {
       handleAdminCommand(cmd, socket, user);
       return;
     }
 
-    let processedCmd = cmd;
     if (user.role === "user") {
       processedCmd = sanitizeCommand(cmd, sessionDir);
       if (processedCmd === null) {
@@ -402,8 +427,8 @@ io.on("connection", (socket) => {
         return;
       }
     }
-    if ((user.role === "owner" || user.role === "admin") && cmd.startsWith("termihost-system ")) {
-      const systemCmd = cmd.replace("termihost-system ", "");
+    if ((user.role === "owner" || user.role === "admin") && cmd.startsWith("mayshell-system ")) {
+      const systemCmd = cmd.replace("mayshell-system ", "");
       pty.stdin.write(systemCmd + "\n");
       return;
     }
@@ -425,11 +450,11 @@ io.on("connection", (socket) => {
   });
 });
 
-// Funciones de comandos (Se mantienen casi iguales, solo cambian los nombres de los comandos)
+// Funciones para manejar comandos de hosting
 function handleHostCommand(cmd, socket, user, sessionDir) {
   const args = cmd.split(" ").slice(1);
   if (args.length === 0) {
-    socket.emit("output", "\nUso: termihost-host <nombre-del-sitio>\n");
+    socket.emit("output", "\nUso: mayshell-host <nombre-del-sitio>\n");
     return;
   }
   const siteName = sanitizeSiteName(args[0]);
@@ -447,19 +472,29 @@ function handleHostCommand(cmd, socket, user, sessionDir) {
     socket.emit("output", "Cree un archivo index.html en este directorio antes de hospedar el sitio.\n");
     return;
   }
-  const watcher = watchSiteFiles(siteName, sessionDir);
-  hostedSites.set(siteName, { userDir: sessionDir, watcher: watcher, sockets: new Set([socket]) });
+  const currentDir = process.cwd();
+  let userCurrentDir = sessionDir;
+
+  try {
+    const ptyWorkingDir = sessionDir;
+    userCurrentDir = ptyWorkingDir;
+  } catch (err) {
+    // Usar sessionDir como fallback
+  }
+
+  const watcher = watchSiteFiles(siteName, userCurrentDir);
+  hostedSites.set(siteName, { userDir: userCurrentDir, watcher: watcher, sockets: new Set([socket]) });
   const siteUrl = `/pages/${siteName}`;
   socket.emit("output", `\n✅ Sitio '${siteName}' hospedado exitosamente!
 🌐 URL: http://localhost:${process.env.PORT || 3000}${siteUrl}
-📁 Directorio: ${path.relative(SESSIONS_DIR, sessionDir)}
+📁 Directorio: ${path.relative(SESSIONS_DIR, userCurrentDir)}
 🔄 Monitoreo de cambios: ACTIVO\n`);
 }
 
 function handleUnhostCommand(cmd, socket, user) {
   const args = cmd.split(" ").slice(1);
   if (args.length === 0) {
-    socket.emit("output", "\nUso: termihost-unhost <nombre-del-sitio>\n");
+    socket.emit("output", "\nUso: mayshell-unhost <nombre-del-sitio>\n");
     return;
   }
   const siteName = sanitizeSiteName(args[0]);
@@ -479,7 +514,7 @@ function handleSitesCommand(socket, user, sessionDir) {
     .map(([name, siteData]) => ({ name, url: `/pages/${name}`, directory: path.relative(sessionDir, siteData.userDir) }));
   if (userSites.length === 0) {
     socket.emit("output", "\nNo tienes sitios hospedados actualmente.\n");
-    socket.emit("output", "Use 'termihost-host <nombre>' para hospedar un sitio.\n");
+    socket.emit("output", "Use 'mayshell-host <nombre>' para hospedar un sitio.\n");
     return;
   }
   let output = "\n🌐 TUS SITIOS HOSPEDADOS:\n================================\n";
@@ -489,18 +524,19 @@ function handleSitesCommand(socket, user, sessionDir) {
   socket.emit("output", output);
 }
 
+// Función para manejar comandos de administración
 function handleAdminCommand(cmd, socket, user) {
   const args = cmd.split(" ").slice(1);
   const command = args[0];
   switch (command) {
     case "help":
-      socket.emit("output", `\nCOMANDOS DE ADMINISTRACIÓN TERMIHOST:
-termihost-admin users          - Listar todos los usuarios
-termihost-admin delete <user>  - Eliminar usuario
-termihost-admin promote <user> - Promover usuario a admin (solo owner)
-termihost-admin demote <user>  - Degradar admin a usuario (solo owner)
-termihost-admin sites          - Ver todos los sitios hospedados
-termihost-system <comando>     - Ejecutar comando en el sistema`);
+      socket.emit("output", `\nCOMANDOS DE ADMINISTRACIÓN MAYSHELL:
+mayshell-admin users          - Listar todos los usuarios
+mayshell-admin delete <user>  - Eliminar usuario
+mayshell-admin promote <user> - Promover usuario a admin (solo owner)
+mayshell-admin demote <user>  - Degradar admin a usuario (solo owner)
+mayshell-admin sites          - Ver todos los sitios hospedados
+mayshell-system <comando>     - Ejecutar comando en el sistema`);
       break;
     case "users":
       const usersData = loadUsers();
@@ -525,7 +561,7 @@ termihost-system <comando>     - Ejecutar comando en el sistema`);
       break;
     case "delete":
       if (args.length < 2) {
-        socket.emit("output", "\nUso: termihost-admin delete <username>\n");
+        socket.emit("output", "\nUso: mayshell-admin delete <username>\n");
         return;
       }
       const userToDelete = args[1];
@@ -570,7 +606,7 @@ termihost-system <comando>     - Ejecutar comando en el sistema`);
         return;
       }
       if (args.length < 2) {
-        socket.emit("output", "\nUso: termihost-admin promote <username>\n");
+        socket.emit("output", "\nUso: mayshell-admin promote <username>\n");
         return;
       }
       const userToPromote = args[1];
@@ -594,7 +630,7 @@ termihost-system <comando>     - Ejecutar comando en el sistema`);
         return;
       }
       if (args.length < 2) {
-        socket.emit("output", "\nUso: termihost-admin demote <username>\n");
+        socket.emit("output", "\nUso: mayshell-admin demote <username>\n");
         return;
       }
       const userToDemote = args[1];
@@ -613,7 +649,7 @@ termihost-system <comando>     - Ejecutar comando en el sistema`);
       socket.emit("output", `\nUsuario '${userToDemote}' degradado a usuario normal\n`);
       break;
     default:
-      socket.emit("output", "\nComando de administración no reconocido. Use 'termihost-admin help'\n");
+      socket.emit("output", "\nComando de administración no reconocido. Use 'mayshell-admin help'\n");
   }
 }
 
@@ -624,7 +660,7 @@ app.use((req, res) => {
 
 // Limpiar recursos al cerrar el servidor
 process.on('SIGINT', () => {
-  console.log('\nCerrando servidor TermiHost...');
+  console.log('\nCerrando servidor MayShell...');
   hostedSites.forEach((siteData) => {
     if (siteData.watcher) siteData.watcher.close();
   });
@@ -633,7 +669,7 @@ process.on('SIGINT', () => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Servidor TermiHost en http://localhost:${PORT}`);
+  console.log(`Servidor MayShell en http://localhost:${PORT}`);
   console.log(`Directorio de sesiones: ${SESSIONS_DIR}`);
   console.log(`Owner: ${OWNER_USERNAME} (${OWNER_EMAIL})`);
   console.log("\nRutas disponibles:");
@@ -645,7 +681,7 @@ server.listen(PORT, () => {
   console.log("- POST /api/login  - Iniciar sesión");
   console.log("- POST /api/register - Registrar usuario");
   console.log("\nComandos de hosting:");
-  console.log("- termihost-host <nombre>   - Hospedar sitio web");
-  console.log("- termihost-unhost <nombre> - Detener hospedaje");
-  console.log("- termihost-sites           - Ver sitios hospedados");
+  console.log("- mayshell-host <nombre>   - Hospedar sitio web");
+  console.log("- mayshell-unhost <nombre> - Detener hospedaje");
+  console.log("- mayshell-sites           - Ver sitios hospedados");
 });
