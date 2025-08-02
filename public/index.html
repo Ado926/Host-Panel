@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MayHost • Hecho por SoyMaycol</title>
+    <title>TermiHost • Hosting para Desarrolladores</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* Estilos generales y variables actualizadas para TermiHost */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         :root {
-            --primary-color: #ff8a00;
-            --secondary-color: #e52e71;
+            --primary-color: #00ff41; /* Verde neón */
+            --secondary-color: #00bfff; /* Azul cian */
             --dark-bg: #121212;
             --card-bg: #1e1e1e;
             --text-color: #ffffff;
             --text-secondary: #cccccc;
             --text-muted: #888888;
         }
-        
+
         body {
             background-color: var(--dark-bg);
             color: var(--text-color);
@@ -31,14 +32,15 @@
             flex-direction: column;
             overflow-x: hidden;
         }
-        
+
         .container {
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
             padding: 0 2rem;
         }
-        
+
+        /* Header y navegación */
         header {
             padding: 1.5rem 0;
             position: fixed;
@@ -51,46 +53,47 @@
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
         }
-        
+
         header.scrolled {
             padding: 0.8rem 0;
         }
-        
+
         .header-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .logo-container {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
-        
+
         .logo {
             width: 50px;
             transition: transform 0.3s ease;
         }
-        
+
         .logo:hover {
             transform: scale(1.1) rotate(5deg);
         }
-        
+
         .logo-text {
             font-size: 1.5rem;
             font-weight: 700;
+            /* Degradado actualizado para TermiHost */
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
+
         .nav-links {
             display: flex;
             gap: 2rem;
         }
-        
+
         .nav-link {
             color: var(--text-color);
             text-decoration: none;
@@ -98,7 +101,7 @@
             position: relative;
             transition: all 0.3s ease;
         }
-        
+
         .nav-link:after {
             content: '';
             position: absolute;
@@ -106,14 +109,15 @@
             height: 2px;
             bottom: -5px;
             left: 0;
+            /* Degradado actualizado */
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             transition: width 0.3s ease;
         }
-        
+
         .nav-link:hover:after {
             width: 100%;
         }
-        
+
         .hamburger {
             display: none;
             background: none;
@@ -122,14 +126,15 @@
             font-size: 1.5rem;
             cursor: pointer;
         }
-        
+
+        /* Hero Section */
         .hero {
             padding: 10rem 0 5rem;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
-        
+
         .hero:before {
             content: '';
             position: absolute;
@@ -137,11 +142,12 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255, 138, 0, 0.1) 0%, rgba(229, 46, 113, 0.05) 30%, rgba(18, 18, 18, 0) 70%);
+            /* Degradado de fondo actualizado */
+            background: radial-gradient(circle, rgba(0, 255, 65, 0.1) 0%, rgba(0, 191, 255, 0.05) 30%, rgba(18, 18, 18, 0) 70%);
             z-index: -1;
             animation: rotate 30s linear infinite;
         }
-        
+
         @keyframes rotate {
             0% {
                 transform: rotate(0deg);
@@ -150,7 +156,7 @@
                 transform: rotate(360deg);
             }
         }
-        
+
         .hero-content {
             max-width: 800px;
             margin: 0 auto;
@@ -159,12 +165,12 @@
             align-items: center;
             gap: 2rem;
         }
-        
+
         .hero-logo {
             width: 200px;
             animation: float 3s ease-in-out infinite;
         }
-        
+
         @keyframes float {
             0%, 100% {
                 transform: translateY(0);
@@ -173,31 +179,32 @@
                 transform: translateY(-15px);
             }
         }
-        
+
         .hero h1 {
             font-size: 3.5rem;
             margin-bottom: 1rem;
+            /* Degradado actualizado para el título */
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             position: relative;
-            text-shadow: 0 5px 25px rgba(229, 46, 113, 0.3);
+            text-shadow: 0 5px 25px rgba(0, 191, 255, 0.3);
         }
-        
+
         .hero p {
             font-size: 1.3rem;
             margin-bottom: 1rem;
             color: var(--text-secondary);
             max-width: 600px;
         }
-        
+
         .hero-buttons {
             display: flex;
             gap: 1.5rem;
             margin-top: 2rem;
         }
-        
+
         .btn {
             padding: 0.9rem 2.5rem;
             border: none;
@@ -213,64 +220,67 @@
             min-width: 180px;
             gap: 0.5rem;
         }
-        
+
         .btn-primary {
+            /* Degradado actualizado */
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            box-shadow: 0 4px 15px rgba(229, 46, 113, 0.4);
+            color: var(--dark-bg);
+            box-shadow: 0 4px 15px rgba(0, 191, 255, 0.4);
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(229, 46, 113, 0.6);
+            box-shadow: 0 7px 20px rgba(0, 191, 255, 0.6);
         }
-        
+
         .btn-secondary {
             background: transparent;
             color: var(--text-color);
             border: 2px solid var(--primary-color);
-            box-shadow: 0 4px 15px rgba(255, 138, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 255, 65, 0.2);
         }
-        
+
         .btn-secondary:hover {
-            background: rgba(255, 138, 0, 0.1);
+            background: rgba(0, 255, 65, 0.1);
             transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(255, 138, 0, 0.3);
+            box-shadow: 0 7px 20px rgba(0, 255, 65, 0.3);
         }
-        
+
+        /* Características */
         .features {
             padding: 5rem 0;
             background-color: rgba(30, 30, 30, 0.5);
         }
-        
+
         .section-title {
             text-align: center;
             margin-bottom: 3rem;
         }
-        
+
         .section-title h2 {
             font-size: 2.5rem;
             margin-bottom: 1rem;
             position: relative;
             display: inline-block;
         }
-        
+
         .section-title h2:after {
             content: '';
             position: absolute;
             width: 50%;
             height: 3px;
+            /* Degradado actualizado */
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             bottom: -10px;
             left: 25%;
         }
-        
+
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
-        
+
         .feature-card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -284,44 +294,45 @@
             align-items: center;
             border-bottom: 3px solid transparent;
         }
-        
+
         .feature-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
             border-bottom: 3px solid var(--primary-color);
         }
-        
+
         .feature-icon {
             font-size: 2.5rem;
             margin-bottom: 1.5rem;
-            color: var(--primary-color);
+            /* Degradado actualizado para íconos */
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
+
         .feature-card h3 {
             font-size: 1.5rem;
             margin-bottom: 1rem;
         }
-        
+
         .feature-card p {
             color: var(--text-secondary);
             font-size: 1rem;
             flex-grow: 1;
         }
-        
+
+        /* Sección de equipo */
         .team {
             padding: 5rem 0;
         }
-        
+
         .team-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
         }
-        
+
         .team-member {
             background: var(--card-bg);
             border-radius: 12px;
@@ -330,12 +341,12 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
-        
+
         .team-member:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
-        
+
         .team-member img {
             width: 120px;
             height: 120px;
@@ -343,86 +354,90 @@
             object-fit: cover;
             margin-bottom: 1.5rem;
             border: 3px solid transparent;
+            /* Degradado actualizado para el borde de la imagen */
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             padding: 3px;
         }
-        
+
         .team-member h3 {
             font-size: 1.3rem;
             margin-bottom: 0.5rem;
         }
-        
+
         .team-member p {
             color: var(--primary-color);
             font-weight: 500;
             margin-bottom: 1rem;
         }
-        
+
+        /* Call to Action (CTA) */
         .cta {
             padding: 5rem 0;
             text-align: center;
-            background: linear-gradient(45deg, rgba(255, 138, 0, 0.1), rgba(229, 46, 113, 0.1));
+            /* Degradado de fondo actualizado */
+            background: linear-gradient(45deg, rgba(0, 255, 65, 0.1), rgba(0, 191, 255, 0.1));
         }
-        
+
         .cta-content {
             max-width: 700px;
             margin: 0 auto;
         }
-        
+
         .cta h2 {
             font-size: 2.5rem;
             margin-bottom: 1.5rem;
         }
-        
+
         .cta p {
             font-size: 1.2rem;
             margin-bottom: 2rem;
             color: var(--text-secondary);
         }
-        
+
         .highlight {
             color: var(--primary-color);
             font-weight: 600;
         }
-        
+
+        /* Footer */
         footer {
             background-color: rgba(0, 0, 0, 0.3);
             padding: 2rem 0;
             text-align: center;
         }
-        
+
         .footer-content {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 1.5rem;
         }
-        
+
         .footer-logo {
             width: 60px;
         }
-        
+
         .footer-links {
             display: flex;
             gap: 1.5rem;
         }
-        
+
         .footer-link {
             color: var(--text-secondary);
             text-decoration: none;
             transition: color 0.3s ease;
         }
-        
+
         .footer-link:hover {
             color: var(--primary-color);
         }
-        
+
         .footer-social {
             display: flex;
             gap: 1rem;
             margin: 1rem 0;
         }
-        
+
         .social-icon {
             width: 40px;
             height: 40px;
@@ -436,24 +451,27 @@
             transition: all 0.3s ease;
             font-size: 1.2rem;
         }
-        
+
         .social-icon:hover {
+            /* Degradado actualizado */
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             transform: translateY(-3px);
         }
-        
+
         .copyright {
             color: var(--text-muted);
             font-size: 0.9rem;
             margin-top: 1rem;
         }
-        
+
+        /* Botón de volver arriba */
         .scroll-to-top {
             position: fixed;
             bottom: 30px;
             right: 30px;
+            /* Degradado actualizado */
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: white;
+            color: var(--dark-bg);
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -467,26 +485,27 @@
             z-index: 1000;
             font-size: 1.2rem;
         }
-        
+
         .scroll-to-top.visible {
             opacity: 1;
             visibility: visible;
         }
-        
+
         .scroll-to-top:hover {
             transform: translateY(-5px);
         }
-        
+
+        /* Media Queries */
         @media (max-width: 992px) {
             .hero h1 {
                 font-size: 3rem;
             }
-            
+
             .feature-card {
                 padding: 1.5rem;
             }
         }
-        
+
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -500,60 +519,60 @@
                 box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
                 padding: 1rem 0;
             }
-            
+
             .nav-links.active {
                 display: flex;
             }
-            
+
             .nav-link {
                 padding: 1rem 2rem;
                 width: 100%;
                 text-align: center;
             }
-            
+
             .hamburger {
                 display: block;
             }
-            
+
             .hero h1 {
                 font-size: 2.5rem;
             }
-            
+
             .hero p {
                 font-size: 1.1rem;
             }
-            
+
             .hero-buttons {
                 flex-direction: column;
                 width: 100%;
                 align-items: center;
             }
-            
+
             .btn {
                 width: 100%;
                 max-width: 300px;
             }
-            
+
             .team-grid {
                 grid-template-columns: 1fr;
                 max-width: 350px;
                 margin: 0 auto;
             }
         }
-        
+
         @media (max-width: 480px) {
             .container {
                 padding: 0 1rem;
             }
-            
+
             .hero-logo {
                 width: 150px;
             }
-            
+
             .hero h1 {
                 font-size: 2rem;
             }
-            
+
             .section-title h2 {
                 font-size: 2rem;
             }
@@ -564,8 +583,8 @@
     <header id="header">
         <div class="container header-container">
             <div class="logo-container">
-                <img src="https://files.catbox.moe/zee841.png" alt="MayHost Logo" class="logo">
-                <span class="logo-text">MayHost</span>
+                <img src="https://files.catbox.moe/zee841.png" alt="TermiHost Logo" class="logo">
+                <span class="logo-text">TermiHost</span>
             </div>
             <nav>
                 <button class="hamburger" id="hamburger">
@@ -575,7 +594,7 @@
                     <a href="#inicio" class="nav-link">Inicio</a>
                     <a href="#caracteristicas" class="nav-link">Características</a>
                     <a href="/admin" class="nav-link">Admin</a>
-                    <a href="cmd.html" class="nav-link">Comenzar</a>
+                    <a href="cmd.html" class="nav-link">Terminal</a>
                 </div>
             </nav>
         </div>
@@ -583,15 +602,15 @@
 
     <section class="hero" id="inicio">
         <div class="container hero-content">
-            <img src="https://files.catbox.moe/zee841.png" alt="MayHost Logo" class="hero-logo">
-            <h1>MayHost</h1>
-            <p>Soluciones de hosting profesionales y fáciles de usar para tus proyectos. Sin complicaciones, sin verificación de correo, solo una experiencia simple y potente.</p>
+            <img src="https://files.catbox.moe/zee841.png" alt="TermiHost Logo" class="hero-logo">
+            <h1>TermiHost</h1>
+            <p>Soluciones de hosting optimizadas para desarrolladores. Un entorno potente y sin distracciones para tus proyectos.</p>
             <div class="hero-buttons">
                 <a href="/terminal" class="btn btn-primary">
-                    <i class="fas fa-rocket"></i> Comenzar Ahora
+                    <i class="fas fa-terminal"></i> Comenzar Ahora
                 </a>
                 <a href="https://whatsapp.com/channel/0029VayXJte65yD6LQGiRB0R" class="btn btn-secondary" target="_blank">
-                    <i class="fas fa-headset"></i> Sigueme
+                    <i class="fas fa-code-branch"></i> Únete a la Comunidad
                 </a>
             </div>
         </div>
@@ -600,50 +619,50 @@
     <section class="features" id="caracteristicas">
         <div class="container">
             <div class="section-title">
-                <h2>¿Por qué elegirnos?</h2>
+                <h2>Por qué usar TermiHost</h2>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
+                        <i class="fas fa-user-friends"></i>
                     </div>
-                    <h3>Interfaz Fácil de Usar</h3>
-                    <p>Diseñada para ser intuitiva y sencilla, nuestra interfaz te permite gestionar tu hosting sin complicaciones.</p>
+                    <h3>Creado para Desarrolladores</h3>
+                    <p>Una interfaz intuitiva y herramientas diseñadas pensando en quienes escriben código.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-database"></i>
                     </div>
-                    <h3>DataBase</h3>
-                    <p>Proyectos con DataBases, Perfecto para este Host!</p>
+                    <h3>Integración con Bases de Datos</h3>
+                    <p>Soporte completo para bases de datos para que tus proyectos complejos funcionen sin problemas.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-lock-open"></i>
+                        <i class="fas fa-key"></i>
                     </div>
-                    <h3>Sin Verificación</h3>
-                    <p>No necesitas verificar tu correo electrónico. Simplemente crea una cuenta con usuario y contraseña.</p>
+                    <h3>Registro Rápido y Simple</h3>
+                    <p>Sin verificación de correo, solo crea una cuenta con tu usuario y contraseña. ¡Empieza a trabajar al instante!</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h3>Seguridad Garantizada</h3>
-                    <p>Tu información y proyectos están protegidos con las mejores prácticas de seguridad.</p>
+                    <h3>Seguridad de Nivel Profesional</h3>
+                    <p>Protegemos tus proyectos y datos con las últimas tecnologías de seguridad.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-headset"></i>
+                        <i class="fas fa-laptop-code"></i>
                     </div>
-                    <h3>Soporte Técnico</h3>
-                    <p>Nuestro equipo está disponible para ayudarte con cualquier problema que puedas tener.</p>
+                    <h3>Soporte Técnico Especializado</h3>
+                    <p>Nuestro equipo está listo para ayudarte con problemas técnicos y de programación.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-tachometer-alt"></i>
+                        <i class="fas fa-rocket"></i>
                     </div>
-                    <h3>Alto Rendimiento</h3>
-                    <p>Servidores optimizados para ofrecer velocidad y estabilidad en todos tus proyectos.</p>
+                    <h3>Servidores de Alto Rendimiento</h3>
+                    <p>Servidores optimizados que garantizan velocidad y estabilidad para tus aplicaciones más exigentes.</p>
                 </div>
             </div>
         </div>
@@ -658,8 +677,8 @@
                 <div class="team-member">
                     <img src="https://files.catbox.moe/sl2j2i.jpeg" alt="SoyMaycol">
                     <h3>SoyMaycol</h3>
-                    <p>Programador</p>
-                    <p>Responsable del desarrollo y programación de la plataforma MayHost.</p>
+                    <p>Programador y Fundador</p>
+                    <p>Líder del desarrollo y la visión detrás de la plataforma TermiHost.</p>
                 </div>
             </div>
         </div>
@@ -667,22 +686,22 @@
 
     <section class="cta">
         <div class="container cta-content">
-            <h2>¡Comienza Hoy Mismo!</h2>
-            <p>Disfruta de <span class="highlight">El mejor Host</span> para tus proyectos. Sin verificación de correo, sin complicaciones, solo hosting profesional al alcance de un clic.</p>
+            <h2>¡Es Hora de Empezar a Codear!</h2>
+            <p>Únete a la plataforma de hosting que entiende a los desarrolladores. Con <span class="highlight">TermiHost</span>, tu próximo proyecto está a solo un clic de distancia.</p>
             <a href="/terminal" class="btn btn-primary">
-                <i class="fas fa-rocket"></i> Crear Mi Cuenta
+                <i class="fas fa-terminal"></i> Crear Mi Cuenta
             </a>
         </div>
     </section>
 
     <footer>
         <div class="container footer-content">
-            <img src="https://files.catbox.moe/zee841.png" alt="MayHost Logo" class="footer-logo">
+            <img src="https://files.catbox.moe/zee841.png" alt="TermiHost Logo" class="footer-logo">
             <div class="footer-links">
                 <a href="#inicio" class="footer-link">Inicio</a>
                 <a href="#caracteristicas" class="footer-link">Características</a>
                 <a href="/admin" class="footer-link">Admin</a>
-                <a href="/terminal" class="footer-link">Comenzar</a>
+                <a href="/terminal" class="footer-link">Terminal</a>
             </div>
             <div class="footer-social">
                 <a href="https://whatsapp.com/channel/0029VayXJte65yD6LQGiRB0R" target="_blank" class="social-icon">
@@ -709,11 +728,11 @@
         // Toggle mobile menu
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('nav-links');
-        
+
         hamburger.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
-        
+
         // Close menu when clicking on a link
         const navLinksArray = document.querySelectorAll('.nav-link');
         navLinksArray.forEach(link => {
@@ -721,7 +740,7 @@
                 navLinks.classList.remove('active');
             });
         });
-        
+
         // Header scroll effect
         const header = document.getElementById('header');
         window.addEventListener('scroll', () => {
@@ -731,7 +750,7 @@
                 header.classList.remove('scrolled');
             }
         });
-        
+
         // Scroll to top button
         const scrollTopBtn = document.getElementById('scroll-top');
         window.addEventListener('scroll', () => {
@@ -741,14 +760,14 @@
                 scrollTopBtn.classList.remove('visible');
             }
         });
-        
+
         scrollTopBtn.addEventListener('click', () => {
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
             });
         });
-        
+
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
