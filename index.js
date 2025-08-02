@@ -497,15 +497,8 @@ io.on("connection", (socket) => {
   // Mensaje de bienvenida personalizado según el rol
   let welcomeMessage = `
 ╔════════════════╗
-║ ♥️             ♥️ ║
-║      MayShell     ║
-║    SoyMaycol <3   ║
-║ ♥️             ♥️ ║
-╚════════════════╝
-
---> GitHub: https://github.com/SoySapo6/
---> Licence: MIT
-
+║ TermiHost
+╚════════════════
 
 `;
 
