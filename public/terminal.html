@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MayHost • Terminal</title>
+  <title>TermiHost • Terminal de Código</title>
   <style>
+    /* Estilos generales y variables actualizadas para TermiHost */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Consolas', 'Monaco', monospace; /* Fuente de terminal para todo el cuerpo */
     }
 
     body {
@@ -27,20 +28,22 @@
       max-width: 800px;
     }
 
+    /* Contenedor de la terminal (oculto al inicio) */
     .terminal-container {
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(255, 80, 80, 0.25);
+      box-shadow: 0 10px 30px rgba(0, 191, 255, 0.25); /* Sombra de azul cian */
       display: none;
-      border: 1px solid rgba(255, 100, 100, 0.3);
+      border: 1px solid rgba(0, 191, 255, 0.3);
     }
 
+    /* Contenedor de autenticación */
     .auth-container {
       background-color: #1a1a1a;
       border-radius: 10px;
       padding: 30px;
-      box-shadow: 0 10px 30px rgba(255, 80, 80, 0.25);
-      border: 1px solid rgba(255, 100, 100, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 191, 255, 0.25);
+      border: 1px solid rgba(0, 191, 255, 0.3);
     }
 
     .auth-header {
@@ -52,12 +55,13 @@
       color: #ffffff;
       font-size: 24px;
       margin-top: 10px;
-      background: linear-gradient(90deg, #FF8A00, #FF4D4D);
+      /* Degradado actualizado para el título */
+      background: linear-gradient(90deg, #00ff41, #00bfff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: bold;
     }
-    
+
     .auth-header .subtext {
       color: #cccccc;
       font-size: 14px;
@@ -65,8 +69,9 @@
     }
 
     .badge-24-7 {
-      background: linear-gradient(90deg, #FF8A00, #FF4D4D);
-      color: white;
+      /* Degradado actualizado para el badge */
+      background: linear-gradient(90deg, #00ff41, #00bfff);
+      color: #121212; /* Color de texto oscuro para mayor contraste */
       padding: 3px 10px;
       border-radius: 20px;
       font-size: 12px;
@@ -83,6 +88,7 @@
     .auth-form {
       display: flex;
       flex-direction: column;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .form-group {
@@ -108,15 +114,17 @@
     }
 
     .form-group input:focus {
-      border-color: #FF8A00;
+      border-color: #00ff41; /* Borde de enfoque verde neón */
       outline: none;
-      box-shadow: 0 0 0 2px rgba(255, 138, 0, 0.3);
+      box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.3);
     }
 
+    /* Botones */
     .btn {
       padding: 14px;
-      background: linear-gradient(90deg, #FF8A00, #FF4D4D);
-      color: white;
+      /* Degradado actualizado para el botón principal */
+      background: linear-gradient(90deg, #00ff41, #00bfff);
+      color: #121212;
       border: none;
       border-radius: 6px;
       cursor: pointer;
@@ -124,12 +132,13 @@
       font-weight: bold;
       transition: all 0.3s;
       text-align: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .btn:hover {
-      background: linear-gradient(90deg, #FF9F2F, #FF6B6B);
+      background: linear-gradient(90deg, #33ff66, #33c6ff);
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(255, 80, 80, 0.3);
+      box-shadow: 0 5px 15px rgba(0, 191, 255, 0.3);
     }
 
     .btn-secondary {
@@ -155,8 +164,10 @@
       background-color: rgba(255, 95, 86, 0.1);
       padding: 8px;
       border-radius: 4px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
+    /* Encabezado de la terminal */
     .terminal-header {
       background: linear-gradient(90deg, #1a1a1a, #2a2a2a);
       color: white;
@@ -174,7 +185,7 @@
       display: flex;
       align-items: center;
     }
-    
+
     .terminal-title img {
       height: 24px;
       margin-right: 10px;
@@ -182,37 +193,37 @@
 
     .user-info {
       margin-left: 12px;
-      background-color: rgba(255, 77, 77, 0.2);
+      background-color: rgba(0, 191, 255, 0.2); /* Fondo azul cian */
       padding: 4px 10px;
       border-radius: 4px;
       font-size: 12px;
-      color: #FF8A00;
-      border: 1px solid rgba(255, 77, 77, 0.3);
+      color: #00bfff;
+      border: 1px solid rgba(0, 191, 255, 0.3);
     }
-    
+
     .badge-live {
       display: flex;
       align-items: center;
-      background-color: rgba(39, 201, 63, 0.2);
-      color: #27c93f;
+      background-color: rgba(0, 255, 65, 0.2); /* Verde neón */
+      color: #00ff41;
       padding: 2px 8px;
       border-radius: 4px;
       font-size: 10px;
       margin-left: 10px;
-      border: 1px solid rgba(39, 201, 63, 0.3);
+      border: 1px solid rgba(0, 255, 65, 0.3);
     }
-    
+
     .badge-live::before {
       content: "";
       display: inline-block;
       width: 6px;
       height: 6px;
-      background-color: #27c93f;
+      background-color: #00ff41;
       border-radius: 50%;
       margin-right: 4px;
       animation: pulse 1.5s infinite;
     }
-    
+
     @keyframes pulse {
       0% { opacity: 1; }
       50% { opacity: 0.5; }
@@ -230,17 +241,9 @@
       border-radius: 50%;
     }
 
-    .terminal-control.close {
-      background-color: #ff5f56;
-    }
-
-    .terminal-control.minimize {
-      background-color: #ffbd2e;
-    }
-
-    .terminal-control.expand {
-      background-color: #27c93f;
-    }
+    .terminal-control.close { background-color: #ff5f56; }
+    .terminal-control.minimize { background-color: #ffbd2e; }
+    .terminal-control.expand { background-color: #27c93f; }
 
     .terminal-actions {
       display: flex;
@@ -262,7 +265,7 @@
 
     .logout-btn:hover {
       color: #fff;
-      background-color: rgba(255, 80, 80, 0.2);
+      background-color: rgba(0, 191, 255, 0.2);
     }
 
     .logout-icon {
@@ -271,6 +274,7 @@
       margin-left: 5px;
     }
 
+    /* Cuerpo de la terminal */
     .terminal-body {
       background-color: #0d0d0d;
       color: #f0f0f0;
@@ -290,6 +294,7 @@
       font-family: 'Consolas', 'Monaco', monospace;
     }
 
+    /* Entrada de la terminal */
     .terminal-input-container {
       display: flex;
       padding: 12px;
@@ -299,7 +304,7 @@
     }
 
     .terminal-prompt {
-      color: #FF4D4D;
+      color: #00ff41; /* Prompt verde neón */
       margin-right: 8px;
       font-weight: bold;
       flex-shrink: 0;
@@ -313,7 +318,7 @@
       flex-grow: 1;
       font-size: 14px;
       outline: none;
-      caret-color: #FF8A00;
+      caret-color: #00bfff; /* Cursor azul cian */
       font-family: 'Consolas', 'Monaco', monospace;
     }
 
@@ -322,12 +327,13 @@
       opacity: 0.7;
     }
 
+    /* Animación de carga */
     .command-loading {
         display: none;
         width: 16px;
         height: 16px;
-        border: 2px solid rgba(255, 138, 0, 0.3);
-        border-top-color: #FF8A00;
+        border: 2px solid rgba(0, 255, 65, 0.3);
+        border-top-color: #00ff41;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
         margin-left: 8px;
@@ -339,6 +345,7 @@
         100% { transform: rotate(360deg); }
     }
 
+    /* Estado de conexión */
     .connection-status {
       position: absolute;
       bottom: 10px;
@@ -352,9 +359,9 @@
     }
 
     .connection-status.connected {
-      background-color: rgba(39, 201, 63, 0.2);
-      color: #27c93f;
-      border: 1px solid rgba(39, 201, 63, 0.3);
+      background-color: rgba(0, 255, 65, 0.2);
+      color: #00ff41;
+      border: 1px solid rgba(0, 255, 65, 0.3);
     }
 
     .connection-status.disconnected {
@@ -373,36 +380,38 @@
     }
 
     .connection-status.connected::before {
-      background-color: #27c93f;
+      background-color: #00ff41;
       animation: pulse 1.5s infinite;
     }
 
     .connection-status.disconnected::before {
       background-color: #ff5f56;
     }
-    
+
     .features {
       display: flex;
       justify-content: space-between;
       margin-top: 15px;
       margin-bottom: 20px;
     }
-    
+
     .feature {
       text-align: center;
       color: #ccc;
       font-size: 12px;
       flex: 1;
       padding: 10px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
+
     .feature i {
-      color: #FF8A00;
+      color: #00ff41; /* Color de icono verde neón */
       font-size: 18px;
       margin-bottom: 5px;
       display: block;
     }
 
+    /* Scrollbar estilizado */
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -419,13 +428,13 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #666;
     }
-    
+
     /* Animaciones */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
+
     .auth-container, .terminal-container {
       animation: fadeIn 0.5s ease-out;
     }
@@ -436,23 +445,23 @@
   <div class="container">
     <div class="auth-container" id="auth-container">
       <div class="auth-header">
-        <h2>MayHost</h2>
-        <div class="badge-24-7">DISPONIBLE 24/7</div>
-        <p class="subtext">Hecho por SoyMaycol</p>
+        <h2>TermiHost</h2>
+        <div class="badge-24-7">TERMINAL 24/7</div>
+        <p class="subtext">Desarrollado por SoyMaycol</p>
       </div>
-      
+
       <div class="features">
         <div class="feature">
-          <i class="fas fa-bolt"></i>
-          <span>Alta Velocidad</span>
+          <i class="fas fa-terminal"></i>
+          <span>Acceso Directo</span>
         </div>
         <div class="feature">
-          <i class="fas fa-lock"></i>
-          <span>Seguro</span>
+          <i class="fas fa-code"></i>
+          <span>Entorno de Desarrollo</span>
         </div>
         <div class="feature">
-          <i class="fas fa-headset"></i>
-          <span>Soporte 24/7</span>
+          <i class="fas fa-shield-alt"></i>
+          <span>Conexión Segura</span>
         </div>
       </div>
 
@@ -497,10 +506,10 @@
           <div class="terminal-control expand"></div>
         </div>
         <div class="terminal-title">
-          <img src="https://files.catbox.moe/zee841.png" alt="MayHost Logo">
-          MayHost
+          <img src="https://files.catbox.moe/zee841.png" alt="TermiHost Logo">
+          TermiHost
           <span class="user-info" id="user-info">...</span>
-          <span class="badge-live">24/7</span>
+          <span class="badge-live">En línea</span>
         </div>
         <div class="terminal-actions">
           <button class="logout-btn" id="logout-btn">
@@ -516,7 +525,7 @@
       <div class="terminal-body">
         <div id="terminal-output"></div>
         <div class="terminal-input-container">
-          <span class="terminal-prompt">$</span>
+          <span class="terminal-prompt">TermiHost ~$</span>
           <input
             type="text"
             id="terminal-input"
@@ -560,7 +569,7 @@
 
       // Comprobar si hay credenciales guardadas
       const checkAuth = () => {
-        const authData = JSON.parse(localStorage.getItem('syaHostAuth') || '{}');
+        const authData = JSON.parse(localStorage.getItem('termiHostAuth') || '{}');
         if (authData.token && authData.username) {
           connectSocket(authData.token, authData.username);
           return true;
@@ -584,27 +593,31 @@
         authContainer.style.display = 'none';
         terminalContainer.style.display = 'block';
         userInfoElement.textContent = username;
-        terminalOutput.textContent = "♣ Conectando ♣\n";
+        terminalOutput.textContent = ">>> Conectando a TermiHost...\n";
         commandLoadingElement.style.display = 'none';
 
         // Eventos del socket
         socket.on("connect", () => {
           connectionStatus.className = "connection-status connected";
           connectionStatus.textContent = "Conectado";
-          terminalOutput.textContent += "♥ Host Conectado Exitosamente ♥\n";
+          terminalOutput.textContent += `\n[OK] Conexión establecida. ¡Bienvenido, ${username}!`;
+          terminalOutput.textContent += "\n\nEscribe 'help' para ver los comandos disponibles.";
+          terminalOutput.textContent += "\n------------------------------------------------\n";
+          terminalOutput.scrollTop = terminalOutput.scrollHeight;
         });
 
         socket.on("disconnect", () => {
           connectionStatus.className = "connection-status disconnected";
           connectionStatus.textContent = "Desconectado";
-          terminalOutput.textContent += "¡Ups! Se ha perdido la Conexion\n";
-          terminalOutput.textContent += "Reconectando...";
+          terminalOutput.textContent += "\n[Error] Conexión perdida. Intentando reconectar...\n";
+          terminalOutput.scrollTop = terminalOutput.scrollHeight;
           commandLoadingElement.style.display = 'none';
         });
 
         socket.on("connect_error", (err) => {
           console.error("Error de conexión:", err.message);
-          terminalOutput.textContent += `\n\n¡Ups! Ha vido un error: ${err.message}`;
+          terminalOutput.textContent += `\n\n[Error] No se pudo conectar: ${err.message}`;
+          terminalOutput.scrollTop = terminalOutput.scrollHeight;
           commandLoadingElement.style.display = 'none';
 
           // Si hay error de autenticación, cerrar sesión
@@ -634,7 +647,7 @@
         if (socket) {
           socket.disconnect();
         }
-        localStorage.removeItem('syaHostAuth');
+        localStorage.removeItem('termiHostAuth');
         authContainer.style.display = 'block';
         terminalContainer.style.display = 'none';
         connectionStatus.className = "connection-status disconnected";
@@ -678,7 +691,7 @@
           }
 
           // Guardar credenciales y conectar socket
-          localStorage.setItem('syaHostAuth', JSON.stringify({
+          localStorage.setItem('termiHostAuth', JSON.stringify({
             username: data.username,
             token: data.token
           }));
@@ -719,7 +732,7 @@
           }
 
           // Guardar credenciales y conectar socket
-          localStorage.setItem('syaHostAuth', JSON.stringify({
+          localStorage.setItem('termiHostAuth', JSON.stringify({
             username: data.username,
             token: data.token
           }));
@@ -746,7 +759,7 @@
             historyIndex = commandHistory.length;
 
             // Mostrar comando en terminal
-            terminalOutput.textContent += `MayHost ~$ ${command}\n`;
+            terminalOutput.textContent += `TermiHost ~$ ${command}\n`;
 
             // Enviar comando al servidor
             socket.emit('command', command);
@@ -757,8 +770,8 @@
             // Limpiar input
             terminalInput.value = '';
           } else if (command !== '' && (!socket || !socket.connected)) {
-             terminalOutput.textContent += `$ ${command}\n`;
-             terminalOutput.textContent += "¡Ups! No se ha podido conectar al servidor.";
+             terminalOutput.textContent += `TermiHost ~$ ${command}\n`;
+             terminalOutput.textContent += "[Error] No se ha podido conectar al servidor.\n";
              terminalOutput.scrollTop = terminalOutput.scrollHeight;
              terminalInput.value = '';
           }
@@ -803,16 +816,16 @@
       // Comandos personalizados
       const handleCustomCommands = (command) => {
         if (command === 'soporte') {
-          return `¡Hola! Soy Maycol, Contactame por el numero 51921826291 por Whatsapp!`;
+          return `¡Hola! Soy Maycol, contáctame por WhatsApp al +51921826291.`;
         } else if (command === 'clear') {
           terminalOutput.textContent = '';
           return '';
-        } else if (command === '24/7') {
-          return `Ese soy yo ♣`;
+        } else if (command === 'enlinea') {
+          return `Tu terminal está conectada y funcionando en línea.`;
         }
         return null;
       };
-      
+
       // Comprobar autenticación al cargar
       if (!checkAuth()) {
         authContainer.style.display = 'block';
@@ -821,7 +834,6 @@
     });
   </script>
       <div id="root"></div>
-    <!-- This script injects a replit badge into the page, please feel free to remove this line -->
     <script type="text/javascript" src="https://files.catbox.moe/mqzcek.js"></script>
 </body>
 </html>
